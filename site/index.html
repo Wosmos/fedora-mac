@@ -8,159 +8,280 @@
 <meta name="color-scheme" content="dark light">
 
 <meta property="og:title" content="fedora-macos-setup">
-<meta property="og:description" content="Make Fedora look like macOS — and stop it thermal-throttling. Ten scripts, fully reversible.">
+<meta property="og:description" content="Make Fedora feel like macOS — and stop it thermal-throttling. Ten scripts, fully reversible.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wosmos.github.io/fedora-macos-setup/">
 <meta property="og:site_name" content="fedora-macos-setup">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://wosmos.github.io/fedora-macos-setup/">
-<meta name="theme-color" content="#0D1017" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#F6F7FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0E14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBFCFE" media="(prefers-color-scheme: light)">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<nav class="topnav" aria-label="Sections">
+<nav class="topnav" aria-label="Main">
   <div class="inner">
-    <a class="brand" href="#top"><span class="dot"></span> fedora-macos-setup</a>
-    <a href="#results">Results</a>
-    <a href="#what">What it does</a>
-    <a href="#keys">Shortcuts</a>
-    <a href="#gotchas">Gotchas</a>
-    <a href="https://github.com/Wosmos/fedora-macos-setup">GitHub</a>
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true">~</span> fedora-macos-setup</a>
+    <div class="navlinks">
+      <a href="#results">Results</a>
+      <a href="#scripts">Scripts</a>
+      <a href="#keys">Shortcuts</a>
+      <a href="#gotchas">Gotchas</a>
+      <a href="https://github.com/Wosmos/fedora-macos-setup">GitHub</a>
+    </div>
+    <button class="themetoggle" id="theme" type="button" aria-label="Toggle colour theme" title="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
-<header class="wrap hero" id="top">
-  <h1>Make Fedora feel like macOS.<br>And stop it throttling.</h1>
-  <p class="tag">
-    Ten scripts for a Fedora GNOME/Wayland workstation — macOS look and feel,
-    macOS-style shortcuts, a natural text-to-speech voice, and the performance
-    fix that mattered more than all the theming put together.
-  </p>
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow"><span class="pulse" aria-hidden="true"></span> Fedora 44 · GNOME 50 · Wayland</span>
+    <h1>Make Fedora feel like macOS.<br><span class="grad">And stop it throttling.</span></h1>
+    <p class="tag">
+      Ten scripts for a Fedora GNOME workstation — the macOS look and feel,
+      macOS-style shortcuts, a natural text-to-speech voice, and the performance
+      fix that mattered more than all the theming put together.
+    </p>
 
-  <div class="badges">
-    <span class="badge ok">Fedora 44</span>
-    <span class="badge ok">GNOME 50</span>
-    <span class="badge ok">Wayland</span>
-    <span class="badge">MIT</span>
-    <span class="badge warn">reference-tested</span>
-  </div>
+    <div class="badges">
+      <span class="badge ok">idempotent</span>
+      <span class="badge ok">reversible</span>
+      <span class="badge ok">MIT</span>
+      <span class="badge warn">tested on 1 machine</span>
+    </div>
 
-  <div class="cmd">
-    <span class="prompt">$</span>
-    <code id="install-cmd">git clone https://github.com/Wosmos/fedora-macos-setup &amp;&amp; cd fedora-macos-setup/scripts &amp;&amp; bash install.sh</code>
-    <button class="copy" id="copy-btn" type="button">copy</button>
+    <div class="term">
+      <div class="term-bar">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="title">bash — install</span>
+      </div>
+      <div class="term-body">
+        <span class="p" aria-hidden="true">$</span>
+        <code id="cmd">git clone https://github.com/Wosmos/fedora-macos-setup
+cd fedora-macos-setup/scripts && bash install.sh</code>
+        <button class="copy" id="copy" type="button">copy</button>
+      </div>
+    </div>
+    <p class="hero-note">Runs as your normal user and calls <code>sudo</code> only where noted. Backs up your entire dconf first.</p>
   </div>
 </header>
 
-<section class="wrap" id="results">
-  <h2>The part that actually mattered</h2>
-  <p class="lede">
-    This started as a theming project. It turned out the machine was being
-    throttled by its own CPU governor — a <code>performance</code> governor on a
-    15&nbsp;W laptop chip, sprinting to maximum turbo for trivial work, hitting its
-    thermal ceiling in milliseconds, and getting cut back. Thousands of times a second.
-  </p>
+<section id="results">
+  <div class="wrap">
+    <p class="sec-label">01 — The point</p>
+    <h2>It was never a theming problem</h2>
+    <p class="lede">
+      The machine was being throttled by its own CPU governor. A <code>performance</code>
+      governor on a <strong>15&nbsp;W</strong> laptop chip: it sprinted to maximum turbo for
+      trivial work, exceeded its thermal headroom in milliseconds, got cut by PROCHOT,
+      and repeated — thousands of times a second.
+    </p>
 
-  <table class="results">
-    <thead>
-      <tr><th>Measured at idle</th><th>Before</th><th>After</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Time spent thermally throttled</td><td class="before">26–27% of wall clock</td><td class="after">0%</td></tr>
-      <tr><td>Package temperature</td><td class="before">82–89 °C</td><td class="after">51–61 °C</td></tr>
-      <tr><td>Fan</td><td class="before">3500 RPM</td><td class="after">0 RPM</td></tr>
-      <tr><td>CPU clock</td><td class="before">400 MHz or 4.2–4.8 GHz, nothing between</td><td class="after">400–1100 MHz, proper steps</td></tr>
-    </tbody>
-  </table>
+    <div class="headline-stat reveal">
+      <div class="hs-side">
+        <div class="hs-num bad">27%</div>
+        <div class="hs-cap">before</div>
+      </div>
+      <div class="hs-arrow" aria-hidden="true">→</div>
+      <div class="hs-side">
+        <div class="hs-num good">0%</div>
+        <div class="hs-cap">after</div>
+      </div>
+      <p class="hs-what">of wall-clock time spent thermally throttled, measured at idle</p>
+    </div>
 
-  <p class="lede" style="margin-top:20px">
-    Dell Latitude 5400, i7-8665U, UHD 620. No hardware was changed to get this.
-  </p>
+    <div class="bars reveal">
+      <div class="bar-row">
+        <span class="lbl">temp before</span>
+        <span class="bar-track"><span class="bar-fill bad" style="width:89%"></span></span>
+        <span class="val bad">89 °C</span>
+      </div>
+      <div class="bar-row">
+        <span class="lbl">temp after</span>
+        <span class="bar-track"><span class="bar-fill good" style="width:61%"></span></span>
+        <span class="val good">61 °C</span>
+      </div>
+      <div class="bar-row">
+        <span class="lbl">fan before</span>
+        <span class="bar-track"><span class="bar-fill bad" style="width:66%"></span></span>
+        <span class="val bad">3500 rpm</span>
+      </div>
+      <div class="bar-row">
+        <span class="lbl">fan after</span>
+        <span class="bar-track"><span class="bar-fill good" style="width:2%"></span></span>
+        <span class="val good">0 rpm</span>
+      </div>
+    </div>
 
-  <div class="note">
-    <strong>If your machine feels laggy, check this before anything else.</strong>
-    Spot temperature readings lie — sampling <code>sensors</code> every two seconds
-    showed a comfortable 61–68 °C while the CPU was throttling a quarter of the time.
-    The samples were landing in the valleys between millisecond spikes. Read the
-    cumulative counters in <code>/sys/devices/system/cpu/cpu0/thermal_throttle/</code> instead.
+    <table class="results">
+      <thead><tr><th>At idle</th><th>Before</th><th>After</th></tr></thead>
+      <tbody>
+        <tr><td>CPU clock distribution</td><td class="before">400 MHz or 4.2–4.8 GHz — nothing between</td><td class="after">400–1100 MHz, proper steps</td></tr>
+        <tr><td>Throttle events, per boot</td><td class="before">24,440</td><td class="after">0</td></tr>
+      </tbody>
+    </table>
+
+    <p class="lede" style="margin:18px 0 0">Dell Latitude 5400, i7-8665U, UHD 620. No hardware was changed.</p>
+
+    <div class="note">
+      <strong>Spot temperature readings lie.</strong> Sampling <code>sensors</code> every two
+      seconds showed a comfortable 61–68 °C while the CPU was throttling a quarter of the
+      time — the samples were landing in the valleys between millisecond spikes. Read the
+      cumulative counters in <code>/sys/devices/system/cpu/cpu0/thermal_throttle/</code> instead.
+    </div>
   </div>
 </section>
 
-<section class="wrap" id="what">
-  <h2>What it does</h2>
-  <p class="lede">Ten numbered scripts. Each one is idempotent, guarded, and reversible.</p>
-  <div class="grid">
-    <div class="card"><h3><span class="n">00</span> Preflight</h3><p>Backs up your entire dconf, then prints a hardware and thermal baseline. Run it first so you can always get back.</p></div>
-    <div class="card"><h3><span class="n">01</span> Performance</h3><p>The important one. Removes forced-performance tuning, restores power-profiles-daemon, sets a sane governor and energy policy.</p></div>
-    <div class="card"><h3><span class="n">02</span> Packages</h3><p>dnf speed config, RPM Fusion, full ffmpeg, hardware video decode, backup tooling.</p></div>
-    <div class="card"><h3><span class="n">03</span> Theme</h3><p>WhiteSur GTK, shell, icons and cursors. Inter and JetBrains Mono. Wallpaper and macOS system sounds.</p></div>
-    <div class="card"><h3><span class="n">04</span> Extensions</h3><p>Twelve GNOME extensions installed straight from extensions.gnome.org, then configured for a weak iGPU.</p></div>
-    <div class="card"><h3><span class="n">05</span> Shortcuts</h3><p>macOS-style keybindings using nothing but GNOME settings. No daemon required.</p></div>
-    <div class="card"><h3><span class="n">06</span> keyd <em>(optional)</em></h3><p>Super becomes Cmd in every application — without breaking <kbd>Ctrl</kbd>+<kbd>C</kbd> in your terminal.</p></div>
-    <div class="card"><h3><span class="n">07</span> Voice</h3><p>Replaces robotic espeak-ng with Piper neural TTS, entirely inside your home directory.</p></div>
-    <div class="card"><h3><span class="n">08</span> Snapshots</h3><p>btrfs safety net via snapper, wired into dnf so every transaction is undoable.</p></div>
-    <div class="card"><h3><span class="n">09</span> Verify</h3><p>Read-only end-to-end check. Tells you what actually took and what silently didn't.</p></div>
+<section id="scripts">
+  <div class="wrap">
+    <p class="sec-label">02 — What runs</p>
+    <h2>Ten scripts, each one reversible</h2>
+    <p class="lede">Numbered, ordered, independently runnable. Every one is safe to run twice.</p>
+    <div class="grid">
+      <div class="card reveal"><h3><span class="n">00</span> Preflight</h3><p>Backs up your entire dconf, then prints a hardware and thermal baseline. Run it first so you can always get back.</p></div>
+      <div class="card reveal"><h3><span class="n">01</span> Performance</h3><p>The one that matters. Removes forced-performance tuning, restores power-profiles-daemon, sets a sane governor and energy policy.</p></div>
+      <div class="card reveal"><h3><span class="n">02</span> Packages</h3><p>dnf speed config, RPM Fusion, full ffmpeg, hardware video decode, backup tooling.</p></div>
+      <div class="card reveal"><h3><span class="n">03</span> Theme</h3><p>WhiteSur GTK, shell, icons and cursors. Inter and JetBrains Mono. Wallpaper and macOS system sounds.</p></div>
+      <div class="card reveal"><h3><span class="n">04</span> Extensions</h3><p>Twelve GNOME extensions from extensions.gnome.org, tuned for a weak integrated GPU.</p></div>
+      <div class="card reveal"><h3><span class="n">05</span> Shortcuts</h3><p>macOS-style keybindings using nothing but GNOME settings. No daemon required.</p></div>
+      <div class="card opt reveal"><h3><span class="n">06</span> keyd</h3><p>Optional. Super becomes Cmd in every application — without breaking <kbd>Ctrl</kbd>+<kbd>C</kbd> in your terminal.</p></div>
+      <div class="card reveal"><h3><span class="n">07</span> Voice</h3><p>Replaces robotic espeak-ng with Piper neural TTS, entirely inside your home directory.</p></div>
+      <div class="card reveal"><h3><span class="n">08</span> Snapshots</h3><p>btrfs safety net via snapper, wired into dnf so every transaction is undoable.</p></div>
+      <div class="card reveal"><h3><span class="n">09</span> Verify</h3><p>Read-only end-to-end check. Tells you what actually took, and what silently didn’t.</p></div>
+    </div>
   </div>
 </section>
 
-<section class="wrap" id="keys">
-  <h2>Shortcuts</h2>
-  <p class="lede">Set by script 05 — no keyd needed for any of these.</p>
-  <table class="keys">
-    <tr><td><kbd>Shift</kbd>+<kbd>Super</kbd>+<kbd>3</kbd> / <kbd>4</kbd> / <kbd>5</kbd></td><td>Screenshot: full, region, region</td></tr>
-    <tr><td><kbd>Ctrl</kbd>+<kbd>↑</kbd></td><td>Mission Control</td></tr>
-    <tr><td><kbd>Super</kbd>+<kbd>Space</kbd></td><td>Spotlight</td></tr>
-    <tr><td><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>→</kbd></td><td>Switch Spaces</td></tr>
-    <tr><td><kbd>Ctrl</kbd>+<kbd>Super</kbd>+<kbd>arrows</kbd></td><td>Tile and maximize</td></tr>
-    <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>V</kbd></td><td>Clipboard history</td></tr>
-  </table>
-  <p class="lede" style="margin-top:18px">With keyd, <kbd>Super</kbd>+<kbd>C</kbd> / <kbd>V</kbd> / <kbd>X</kbd> work everywhere — including terminals.</p>
-</section>
-
-<section class="wrap" id="gotchas">
-  <h2>Things that cost real debugging time</h2>
-  <p class="lede">All of them are written up in the troubleshooting guide, with the diagnosis that actually worked.</p>
-  <div class="grid">
-    <div class="card"><h3>“Enabled” is not “running”</h3><p>A GNOME extension can sit in the enabled list reporting <code>OUT OF DATE</code> and silently never load. Check <code>State</code>, not the list.</p></div>
-    <div class="card"><h3>keyd layers inherit</h3><p>Omitting a key from a compound layer doesn’t pass it through — it falls back to the parent layer and fires the wrong thing.</p></div>
-    <div class="card"><h3>Never grep for “error”</h3><p><code>keyd check</code> reports success as <em>“No errors found.”</em> A naive grep marks a valid config broken.</p></div>
-    <div class="card"><h3>The wrong <code>piper</code></h3><p>The <code>piper</code> package in Fedora’s repos is a gaming-mouse tool. Piper TTS isn’t packaged for Fedora at all.</p></div>
+<section id="clipboard">
+  <div class="wrap">
+    <p class="sec-label">03 — The clever bit</p>
+    <h2>Cmd+C that doesn’t break your terminal</h2>
+    <p class="lede">
+      Remappers normally turn <kbd>Super</kbd>+<kbd>C</kbd> into <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+      which in a terminal is SIGINT. You end up choosing between copy and interrupt.
+      The way out is to never send <kbd>Ctrl</kbd>+<kbd>C</kbd> at all.
+    </p>
+    <div class="grid">
+      <div class="card reveal"><h3>keyd emits a media key</h3><p><code>XF86Copy</code>, <code>XF86Paste</code>, <code>XF86Cut</code> — not Ctrl combinations.</p></div>
+      <div class="card reveal"><h3>Apps handle it natively</h3><p>GTK and Qt already understand those keys as clipboard actions. Nothing to configure.</p></div>
+      <div class="card reveal"><h3>Ctrl+C is untouched</h3><p>It is never transmitted, so interrupt keeps working exactly as before.</p></div>
+    </div>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Related</h2>
-  <p class="lede">
-    Terminal side of the same setup:
-    <a href="https://github.com/Wosmos/furnizsh"><strong>furnizsh</strong></a> —
-    fit out your terminal in one command, with Ghostty, zsh and Starship.
-    This repo assumes it, but doesn’t require it.
-  </p>
+<section id="keys">
+  <div class="wrap">
+    <p class="sec-label">04 — Muscle memory</p>
+    <h2>Shortcuts</h2>
+    <p class="lede">These need no daemon — plain GNOME settings, set by script 05.</p>
+    <table class="keys">
+      <tr><td><kbd>Shift</kbd> <kbd>Super</kbd> <kbd>3</kbd> / <kbd>4</kbd> / <kbd>5</kbd></td><td>Screenshot: full screen, region, region</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>↑</kbd></td><td>Mission Control</td></tr>
+      <tr><td><kbd>Super</kbd> <kbd>Space</kbd></td><td>Spotlight</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>←</kbd> / <kbd>→</kbd></td><td>Switch Spaces</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>Super</kbd> <kbd>arrows</kbd></td><td>Tile and maximize</td></tr>
+      <tr><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>V</kbd></td><td>Clipboard history — 50 items, searchable</td></tr>
+      <tr><td><kbd>Super</kbd> <kbd>C</kbd> / <kbd>V</kbd> / <kbd>X</kbd></td><td>Copy, paste, cut — everywhere <em>(with keyd)</em></td></tr>
+      <tr><td><kbd>Backspace</kbd> <kbd>Esc</kbd> <kbd>Enter</kbd></td><td>Panic key — kills keyd instantly</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="gotchas">
+  <div class="wrap">
+    <p class="sec-label">05 — Hard-won</p>
+    <h2>Things that cost real debugging time</h2>
+    <p class="lede">All written up properly, with the diagnosis that actually worked.</p>
+    <div class="grid">
+      <div class="card reveal"><h3>“Enabled” is not “running”</h3><p>A GNOME extension can sit in the enabled list reporting <code>OUT OF DATE</code> and silently never load. Check <code>State</code>, not the list.</p></div>
+      <div class="card reveal"><h3>keyd layers inherit</h3><p>Omitting a key from a compound layer doesn’t pass it through — it falls back to the parent layer and fires the wrong thing.</p></div>
+      <div class="card reveal"><h3>Never grep for “error”</h3><p><code>keyd check</code> reports success as <em>“No errors found.”</em> A naive grep marks a valid config broken.</p></div>
+      <div class="card reveal"><h3>The wrong <code>piper</code></h3><p>The <code>piper</code> package in Fedora’s repos is a gaming-mouse tool. Piper TTS isn’t packaged for Fedora at all.</p></div>
+      <div class="card reveal"><h3><code>pkill -f</code> kills you</h3><p><code>pkill -f speech-dispatcher</code> matches the calling shell’s own command line and ends your session.</p></div>
+      <div class="card reveal"><h3>Fractional scaling costs</h3><p>It renders large and downscales every frame. 100% plus text scaling looks identical and is free.</p></div>
+    </div>
+    <div class="note">
+      <strong>Read before you run any of this.</strong> It installs a kernel-level key
+      remapper that sees every keystroke, and can replace a system file the login screen
+      depends on. Both are reversible, and both are documented.
+      <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/SECURITY.md">SECURITY.md</a>
+    </div>
+  </div>
+</section>
+
+<section id="related">
+  <div class="wrap">
+    <p class="sec-label">06 — Related</p>
+    <div class="related">
+      <div class="rt">
+        <h3>furnizsh</h3>
+        <p>The terminal half of the same setup — Ghostty, zsh and Starship, installed and themed together. Assumed here, but not required.</p>
+      </div>
+      <a class="btn ghost" href="https://github.com/Wosmos/furnizsh">View furnizsh</a>
+      <a class="btn" href="https://github.com/Wosmos/fedora-macos-setup">Get started</a>
+    </div>
+  </div>
 </section>
 
 <footer>
   <div class="inner">
     <span>MIT licensed.</span>
     <a href="https://github.com/Wosmos/fedora-macos-setup">Source</a>
+    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/ARCHITECTURE.md">Architecture</a>
     <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/TROUBLESHOOTING.md">Troubleshooting</a>
     <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/CONTRIBUTING.md">Contributing</a>
-    <img class="wordmark" src="assets/img/wosmo-wordmark.svg" alt="wosmo">
+    <img class="wordmark" src="assets/img/wosmo-wordmark.svg" alt="wosmo" width="120" height="16">
   </div>
 </footer>
 
 <script>
-document.getElementById('copy-btn').addEventListener('click', async function () {
-  var btn = this;
-  try {
-    await navigator.clipboard.writeText(document.getElementById('install-cmd').textContent);
-    btn.textContent = 'copied';
-  } catch (e) {
-    btn.textContent = 'select it';
+(function () {
+  // theme toggle, remembered per browser
+  var root = document.documentElement, btn = document.getElementById('theme');
+  try { var saved = localStorage.getItem('theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    var cur = root.getAttribute('data-theme') || (dark ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+
+  // copy the install command
+  var copy = document.getElementById('copy');
+  copy.addEventListener('click', async function () {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('cmd').textContent.trim());
+      copy.textContent = 'copied'; copy.classList.add('done');
+    } catch (e) { copy.textContent = 'select it'; }
+    setTimeout(function () { copy.textContent = 'copy'; copy.classList.remove('done'); }, 1700);
+  });
+
+  // reveal on scroll, and grow the bars once they are visible
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        en.target.querySelectorAll('.bar-fill').forEach(function (b) { b.classList.add('in'); });
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    document.querySelectorAll('.bar-fill').forEach(function (b) { b.classList.add('in'); });
   }
-  setTimeout(function () { btn.textContent = 'copy'; }, 1600);
-});
+})();
 </script>
 </body>
 </html>
