@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# 01 - PERFORMANCE / THERMALS
+# The single highest-impact script. On the reference machine this took idle
+# temps from 89C to 61C and CPU throttling from 27% of wall-clock to 0%.
+#
+# Run with: sudo bash 01-performance.sh
+set -uo pipefail
+[ "$EUID" -ne 0 ] && { echo "run with sudo"; exit 1; }
+
+echo "== Removing any forced-performance CPU tuning =="
+# A 'performance' governor on a 15W laptop CPU is actively harmful: it boosts
+# to max turbo for trivial work, overheats, and the hardware throttles it.
+rm -f /etc/udev/rules.d/99-cpu-tune.rules
+rm -f /usr/local/bin/cpu-tune.sh
+systemctl disable --now cpu-tune.service 2>/dev/null
+rm -f /etc/systemd/system/cpu-tune.service
+systemctl daemon-reload; systemctl reset-failed 2>/dev/null
+udevadm control --reload-rules
+
+echo "== Handing power management back to GNOME =="
+systemctl unmask power-profiles-daemon.service
+systemctl enable --now power-profiles-daemon.service
+# tuned fights ppd over the same knobs - pick one.
+systemctl disable --now tuned.service 2>/dev/null
+
+echo "== Sane CPU energy policy =="
+# 'powersave' is the CORRECT intel_pstate governor on a laptop. It still
+# reaches full turbo on demand; it just doesn't sprint there to run `ls`.
+for c in /sys/devices/system/cpu/cpu*/cpufreq; do
+  echo powersave           > "$c/scaling_governor"              2>/dev/null
+  echo balance_performance > "$c/energy_performance_preference"  2>/dev/null
+done
+
+echo "== zram-correct swappiness =="
+echo 'vm.swappiness=150' > /etc/sysctl.d/99-zram-swappiness.conf
+sysctl -w vm.swappiness=150 >/dev/null
+
+echo "== Battery charge limit 80% (skip if you want full capacity) =="
+if [ -w /sys/class/power_supply/BAT0/charge_control_end_threshold ]; then
+  echo 80 > /sys/class/power_supply/BAT0/charge_control_end_threshold
+  cat > /etc/systemd/system/battery-charge-limit.service <<'UNIT'
+[Unit]
+Description=Limit battery charge to 80%
+After=multi-user.target
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 80 > /sys/class/power_supply/BAT0/charge_control_end_threshold'
+[Install]
+WantedBy=multi-user.target
+UNIT
+  systemctl enable battery-charge-limit.service 2>/dev/null
+fi
+
+echo
+echo "governor: $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)"
+echo "EPP     : $(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference)"
+echo "profile : $(powerprofilesctl get 2>/dev/null)"
+echo
+echo "IMPORTANT: power-profiles-daemon may come up on 'performance' after a"
+echo "reboot, which undoes the EPP above. Pin it with the user autostart entry"
+echo "installed by 05-shortcuts.sh, or run: powerprofilesctl set balanced"
