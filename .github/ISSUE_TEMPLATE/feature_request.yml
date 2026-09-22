@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest an addition
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        In scope: Fedora, GNOME, Wayland, the macOS look and feel, performance.
+        Out of scope: other distros and desktops, and anything shipping Apple's
+        proprietary assets. Ports are welcome as forks and happily linked.
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like added?
+    validations: {required: true}
+  - type: textarea
+    id: why
+    attributes:
+      label: Why — what does it improve?
+    validations: {required: true}
+  - type: textarea
+    id: revert
+    attributes:
+      label: How would someone undo it?
+      description: Everything here must be reversible. If you are not sure, say so.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This works on Wayland
+        - label: If it is a GNOME extension, a build exists for current GNOME

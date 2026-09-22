@@ -1,0 +1,181 @@
+/* ============================================================
+   fedora-macos-setup — stylesheet
+   https://github.com/Wosmos/fedora-macos-setup
+
+   Direction: "cool, clinical, measured". Sibling to furnizsh but
+   not a copy — furnizsh is a warm furnished room; this is a
+   diagnostic bench. The palette is cooler, the accent is Fedora
+   blue rather than teal, and numbers are the loudest thing on
+   the page, because the numbers are the point.
+   ============================================================ */
+
+:root {
+  --ground:    #0D1017;
+  --surface:   #141821;
+  --surface-2: #1B2029;
+  --surface-3: #232935;
+  --line:      #2A313D;
+  --line-soft: #1E242E;
+
+  --ink:       #E6EAF2;
+  --ink-dim:   #9DA7B8;
+  --ink-faint: #7C8699;
+
+  --blue:   #6FA8F5;   /* Fedora-ish, the primary accent */
+  --teal:   #7FD1C1;
+  --peach:  #F5A97F;
+  --green:  #9BD98E;
+  --red:    #F08A8A;
+  --mauve:  #BFA3F0;
+
+  --accent:     var(--blue);
+  --accent-ink: #08131F;
+
+  --shadow:    0 24px 48px -28px rgba(0,0,0,.8);
+  --shadow-sm: 0 8px 20px -14px rgba(0,0,0,.6);
+
+  --mono: "JetBrains Mono","JetBrainsMono Nerd Font Mono",ui-monospace,
+          SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans: "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+          "Helvetica Neue",Arial,sans-serif;
+
+  --measure: 68ch;
+  --wide: 1120px;
+  --r-sm: 8px; --r: 14px; --r-lg: 20px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground:#F6F7FA; --surface:#FFF; --surface-2:#EFF2F7; --surface-3:#E4E9F1;
+    --line:#D6DCE6; --line-soft:#E6EAF1;
+    --ink:#131720; --ink-dim:#4C5668; --ink-faint:#6B7688;
+    --blue:#2B6CB8; --teal:#1F8778; --peach:#B4622C; --green:#3E8B34;
+    --red:#C4443F; --mauve:#6A4BB0; --accent-ink:#FFF;
+    --shadow:0 24px 48px -30px rgba(20,30,50,.25);
+    --shadow-sm:0 8px 20px -16px rgba(20,30,50,.2);
+  }
+}
+:root[data-theme="light"] {
+  --ground:#F6F7FA; --surface:#FFF; --surface-2:#EFF2F7; --surface-3:#E4E9F1;
+  --line:#D6DCE6; --line-soft:#E6EAF1;
+  --ink:#131720; --ink-dim:#4C5668; --ink-faint:#6B7688;
+  --blue:#2B6CB8; --teal:#1F8778; --peach:#B4622C; --green:#3E8B34;
+  --red:#C4443F; --mauve:#6A4BB0; --accent-ink:#FFF;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+code,kbd,pre{font-family:var(--mono)}
+
+.wrap{max-width:var(--wide); margin:0 auto; padding:0 16px}
+
+/* nav */
+.topnav{
+  position:sticky; top:0; z-index:10; background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line-soft);
+}
+.topnav .inner{
+  max-width:var(--wide); margin:0 auto; padding:10px 16px;
+  display:flex; gap:18px; align-items:center; flex-wrap:wrap;
+}
+.topnav a{color:var(--ink-dim); font-size:.9rem}
+.topnav a:hover{color:var(--ink); text-decoration:none}
+.brand{display:flex; align-items:center; gap:9px; margin-right:auto; color:var(--ink)!important; font-weight:600}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none}
+
+/* hero */
+.hero{padding:64px 16px 40px; text-align:center}
+.hero h1{font-size:clamp(1.9rem,5vw,3rem); line-height:1.12; margin:0 0 12px; letter-spacing:-.02em}
+.hero .tag{color:var(--ink-dim); font-size:clamp(1rem,2.2vw,1.2rem); max-width:62ch; margin:0 auto 24px}
+.badges{display:flex; gap:7px; justify-content:center; flex-wrap:wrap; margin-bottom:26px}
+.badge{
+  font-family:var(--mono); font-size:.72rem; padding:3px 9px; border-radius:99px;
+  border:1px solid var(--line); background:var(--surface-2); color:var(--ink-dim);
+}
+.badge.ok{color:var(--green); border-color:color-mix(in srgb,var(--green) 40%,transparent)}
+.badge.warn{color:var(--peach); border-color:color-mix(in srgb,var(--peach) 40%,transparent)}
+
+/* code block */
+.cmd{
+  display:flex; align-items:center; gap:12px; max-width:760px; margin:0 auto;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:14px 16px; box-shadow:var(--shadow-sm); text-align:left;
+}
+.cmd code{flex:1; font-size:.86rem; color:var(--ink); overflow-x:auto; white-space:nowrap}
+.cmd .prompt{color:var(--accent); user-select:none}
+.copy{
+  flex:none; font:inherit; font-size:.75rem; font-family:var(--mono);
+  background:var(--surface-3); color:var(--ink-dim); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:5px 11px; cursor:pointer;
+}
+.copy:hover{color:var(--ink); border-color:var(--accent)}
+
+/* sections */
+section{padding:44px 0; border-top:1px solid var(--line-soft)}
+section h2{font-size:1.45rem; margin:0 0 6px; letter-spacing:-.01em}
+section .lede{color:var(--ink-dim); margin:0 0 24px; max-width:var(--measure)}
+
+/* the numbers table - the loudest thing here, deliberately */
+.results{
+  width:100%; border-collapse:collapse; font-size:.92rem;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
+}
+.results th,.results td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line-soft)}
+.results thead th{background:var(--surface-2); color:var(--ink-dim); font-size:.78rem; text-transform:uppercase; letter-spacing:.05em}
+.results tbody tr:last-child td{border-bottom:0}
+.results .before{color:var(--red); font-family:var(--mono)}
+.results .after{color:var(--green); font-family:var(--mono); font-weight:600}
+
+/* cards */
+.grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:18px; box-shadow:var(--shadow-sm);
+}
+.card h3{margin:0 0 6px; font-size:1rem; display:flex; align-items:center; gap:8px}
+.card h3 .n{
+  font-family:var(--mono); font-size:.72rem; color:var(--accent-ink); background:var(--accent);
+  border-radius:5px; padding:1px 6px; flex:none;
+}
+.card p{margin:0; color:var(--ink-dim); font-size:.9rem}
+
+/* keys */
+kbd{
+  font-size:.76rem; padding:2px 6px; border-radius:5px; background:var(--surface-3);
+  border:1px solid var(--line); border-bottom-width:2px; color:var(--ink); white-space:nowrap;
+}
+.keys{width:100%; border-collapse:collapse; font-size:.9rem}
+.keys td{padding:8px 10px; border-bottom:1px solid var(--line-soft)}
+.keys td:first-child{width:42%}
+.keys tr:last-child td{border-bottom:0}
+
+/* callout */
+.note{
+  border-left:3px solid var(--peach); background:var(--surface);
+  padding:14px 16px; border-radius:0 var(--r-sm) var(--r-sm) 0; color:var(--ink-dim); font-size:.9rem;
+}
+.note strong{color:var(--ink)}
+
+/* footer */
+footer{padding:36px 16px 56px; border-top:1px solid var(--line-soft); color:var(--ink-faint); font-size:.86rem}
+footer .inner{max-width:var(--wide); margin:0 auto; display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+footer .wordmark{height:17px; opacity:.5; margin-left:auto}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) footer .wordmark{filter:invert(1)}}
+:root[data-theme="light"] footer .wordmark{filter:invert(1)}
+footer a{color:var(--ink-dim)}
+
+@media (max-width:560px){
+  .hero{padding:40px 16px 28px}
+  .cmd{flex-direction:column; align-items:stretch; gap:10px}
+  .cmd code{white-space:pre-wrap; word-break:break-all}
+  .results thead{display:none}
+  .results td{display:block; border-bottom:0; padding:5px 14px}
+  .results tbody tr{display:block; border-bottom:1px solid var(--line-soft); padding:9px 0}
+}

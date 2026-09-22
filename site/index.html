@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fedora-macos-setup — make Fedora look like macOS, and stop it throttling</title>
+<meta name="description" content="Reproducible Fedora GNOME/Wayland setup: macOS look and feel, macOS-style shortcuts, neural text-to-speech, and the thermal fix that took one laptop from throttling 27% of the time to 0%.">
+<meta name="color-scheme" content="dark light">
+
+<meta property="og:title" content="fedora-macos-setup">
+<meta property="og:description" content="Make Fedora look like macOS — and stop it thermal-throttling. Ten scripts, fully reversible.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wosmos.github.io/fedora-macos-setup/">
+<meta property="og:site_name" content="fedora-macos-setup">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://wosmos.github.io/fedora-macos-setup/">
+<meta name="theme-color" content="#0D1017" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F6F7FA" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="topnav" aria-label="Sections">
+  <div class="inner">
+    <a class="brand" href="#top"><span class="dot"></span> fedora-macos-setup</a>
+    <a href="#results">Results</a>
+    <a href="#what">What it does</a>
+    <a href="#keys">Shortcuts</a>
+    <a href="#gotchas">Gotchas</a>
+    <a href="https://github.com/Wosmos/fedora-macos-setup">GitHub</a>
+  </div>
+</nav>
+
+<header class="wrap hero" id="top">
+  <h1>Make Fedora feel like macOS.<br>And stop it throttling.</h1>
+  <p class="tag">
+    Ten scripts for a Fedora GNOME/Wayland workstation — macOS look and feel,
+    macOS-style shortcuts, a natural text-to-speech voice, and the performance
+    fix that mattered more than all the theming put together.
+  </p>
+
+  <div class="badges">
+    <span class="badge ok">Fedora 44</span>
+    <span class="badge ok">GNOME 50</span>
+    <span class="badge ok">Wayland</span>
+    <span class="badge">MIT</span>
+    <span class="badge warn">reference-tested</span>
+  </div>
+
+  <div class="cmd">
+    <span class="prompt">$</span>
+    <code id="install-cmd">git clone https://github.com/Wosmos/fedora-macos-setup &amp;&amp; cd fedora-macos-setup/scripts &amp;&amp; bash install.sh</code>
+    <button class="copy" id="copy-btn" type="button">copy</button>
+  </div>
+</header>
+
+<section class="wrap" id="results">
+  <h2>The part that actually mattered</h2>
+  <p class="lede">
+    This started as a theming project. It turned out the machine was being
+    throttled by its own CPU governor — a <code>performance</code> governor on a
+    15&nbsp;W laptop chip, sprinting to maximum turbo for trivial work, hitting its
+    thermal ceiling in milliseconds, and getting cut back. Thousands of times a second.
+  </p>
+
+  <table class="results">
+    <thead>
+      <tr><th>Measured at idle</th><th>Before</th><th>After</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Time spent thermally throttled</td><td class="before">26–27% of wall clock</td><td class="after">0%</td></tr>
+      <tr><td>Package temperature</td><td class="before">82–89 °C</td><td class="after">51–61 °C</td></tr>
+      <tr><td>Fan</td><td class="before">3500 RPM</td><td class="after">0 RPM</td></tr>
+      <tr><td>CPU clock</td><td class="before">400 MHz or 4.2–4.8 GHz, nothing between</td><td class="after">400–1100 MHz, proper steps</td></tr>
+    </tbody>
+  </table>
+
+  <p class="lede" style="margin-top:20px">
+    Dell Latitude 5400, i7-8665U, UHD 620. No hardware was changed to get this.
+  </p>
+
+  <div class="note">
+    <strong>If your machine feels laggy, check this before anything else.</strong>
+    Spot temperature readings lie — sampling <code>sensors</code> every two seconds
+    showed a comfortable 61–68 °C while the CPU was throttling a quarter of the time.
+    The samples were landing in the valleys between millisecond spikes. Read the
+    cumulative counters in <code>/sys/devices/system/cpu/cpu0/thermal_throttle/</code> instead.
+  </div>
+</section>
+
+<section class="wrap" id="what">
+  <h2>What it does</h2>
+  <p class="lede">Ten numbered scripts. Each one is idempotent, guarded, and reversible.</p>
+  <div class="grid">
+    <div class="card"><h3><span class="n">00</span> Preflight</h3><p>Backs up your entire dconf, then prints a hardware and thermal baseline. Run it first so you can always get back.</p></div>
+    <div class="card"><h3><span class="n">01</span> Performance</h3><p>The important one. Removes forced-performance tuning, restores power-profiles-daemon, sets a sane governor and energy policy.</p></div>
+    <div class="card"><h3><span class="n">02</span> Packages</h3><p>dnf speed config, RPM Fusion, full ffmpeg, hardware video decode, backup tooling.</p></div>
+    <div class="card"><h3><span class="n">03</span> Theme</h3><p>WhiteSur GTK, shell, icons and cursors. Inter and JetBrains Mono. Wallpaper and macOS system sounds.</p></div>
+    <div class="card"><h3><span class="n">04</span> Extensions</h3><p>Twelve GNOME extensions installed straight from extensions.gnome.org, then configured for a weak iGPU.</p></div>
+    <div class="card"><h3><span class="n">05</span> Shortcuts</h3><p>macOS-style keybindings using nothing but GNOME settings. No daemon required.</p></div>
+    <div class="card"><h3><span class="n">06</span> keyd <em>(optional)</em></h3><p>Super becomes Cmd in every application — without breaking <kbd>Ctrl</kbd>+<kbd>C</kbd> in your terminal.</p></div>
+    <div class="card"><h3><span class="n">07</span> Voice</h3><p>Replaces robotic espeak-ng with Piper neural TTS, entirely inside your home directory.</p></div>
+    <div class="card"><h3><span class="n">08</span> Snapshots</h3><p>btrfs safety net via snapper, wired into dnf so every transaction is undoable.</p></div>
+    <div class="card"><h3><span class="n">09</span> Verify</h3><p>Read-only end-to-end check. Tells you what actually took and what silently didn't.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="keys">
+  <h2>Shortcuts</h2>
+  <p class="lede">Set by script 05 — no keyd needed for any of these.</p>
+  <table class="keys">
+    <tr><td><kbd>Shift</kbd>+<kbd>Super</kbd>+<kbd>3</kbd> / <kbd>4</kbd> / <kbd>5</kbd></td><td>Screenshot: full, region, region</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>↑</kbd></td><td>Mission Control</td></tr>
+    <tr><td><kbd>Super</kbd>+<kbd>Space</kbd></td><td>Spotlight</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>→</kbd></td><td>Switch Spaces</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Super</kbd>+<kbd>arrows</kbd></td><td>Tile and maximize</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>V</kbd></td><td>Clipboard history</td></tr>
+  </table>
+  <p class="lede" style="margin-top:18px">With keyd, <kbd>Super</kbd>+<kbd>C</kbd> / <kbd>V</kbd> / <kbd>X</kbd> work everywhere — including terminals.</p>
+</section>
+
+<section class="wrap" id="gotchas">
+  <h2>Things that cost real debugging time</h2>
+  <p class="lede">All of them are written up in the troubleshooting guide, with the diagnosis that actually worked.</p>
+  <div class="grid">
+    <div class="card"><h3>“Enabled” is not “running”</h3><p>A GNOME extension can sit in the enabled list reporting <code>OUT OF DATE</code> and silently never load. Check <code>State</code>, not the list.</p></div>
+    <div class="card"><h3>keyd layers inherit</h3><p>Omitting a key from a compound layer doesn’t pass it through — it falls back to the parent layer and fires the wrong thing.</p></div>
+    <div class="card"><h3>Never grep for “error”</h3><p><code>keyd check</code> reports success as <em>“No errors found.”</em> A naive grep marks a valid config broken.</p></div>
+    <div class="card"><h3>The wrong <code>piper</code></h3><p>The <code>piper</code> package in Fedora’s repos is a gaming-mouse tool. Piper TTS isn’t packaged for Fedora at all.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Related</h2>
+  <p class="lede">
+    Terminal side of the same setup:
+    <a href="https://github.com/Wosmos/furnizsh"><strong>furnizsh</strong></a> —
+    fit out your terminal in one command, with Ghostty, zsh and Starship.
+    This repo assumes it, but doesn’t require it.
+  </p>
+</section>
+
+<footer>
+  <div class="inner">
+    <span>MIT licensed.</span>
+    <a href="https://github.com/Wosmos/fedora-macos-setup">Source</a>
+    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/TROUBLESHOOTING.md">Troubleshooting</a>
+    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/CONTRIBUTING.md">Contributing</a>
+    <img class="wordmark" src="assets/img/wosmo-wordmark.svg" alt="wosmo">
+  </div>
+</footer>
+
+<script>
+document.getElementById('copy-btn').addEventListener('click', async function () {
+  var btn = this;
+  try {
+    await navigator.clipboard.writeText(document.getElementById('install-cmd').textContent);
+    btn.textContent = 'copied';
+  } catch (e) {
+    btn.textContent = 'select it';
+  }
+  setTimeout(function () { btn.textContent = 'copy'; }, 1600);
+});
+</script>
+</body>
+</html>

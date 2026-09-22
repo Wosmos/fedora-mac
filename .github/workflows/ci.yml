@@ -1,0 +1,26 @@
+name: CI
+on:
+  push: {branches: [master, main]}
+  pull_request:
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: bash -n scripts/*.sh lib/*.sh
+      - name: ShellCheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y shellcheck
+          # SC1091: we source lib/common.sh via a computed path
+          shellcheck -e SC1091 -S error scripts/*.sh lib/*.sh
+      - name: No hardcoded home paths
+        run: |
+          if grep -rnE '/home/[a-z]+' scripts/ lib/ conf/ 2>/dev/null; then
+            echo "::error::hardcoded home path found - use real_home from lib/common.sh"; exit 1
+          fi
+          echo "clean"
+      - name: Scripts are executable
+        run: |
+          for f in scripts/*.sh; do [ -x "$f" ] || { echo "::error::$f not executable"; exit 1; }; done
+          echo "ok"

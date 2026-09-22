@@ -1,0 +1,48 @@
+name: Bug report
+description: Something did not work, or broke
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please run `bash scripts/09-verify.sh` first and paste the output below.
+        It covers most of what would be asked for anyway.
+  - type: textarea
+    id: verify
+    attributes:
+      label: Output of scripts/09-verify.sh
+      render: shell
+    validations: {required: true}
+  - type: input
+    id: versions
+    attributes:
+      label: Fedora and GNOME version
+      placeholder: "Fedora 44, GNOME 50.1, Wayland"
+    validations: {required: true}
+  - type: input
+    id: hardware
+    attributes:
+      label: Machine
+      placeholder: "Dell Latitude 5400, i7-8665U, UHD 620"
+  - type: input
+    id: script
+    attributes:
+      label: Which script
+      placeholder: "scripts/06-keyd.sh"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations: {required: true}
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I ran `00-preflight.sh` first, so I have a dconf backup
+        - label: If this is an extension not working, I checked its `State` (not just the enabled list)
+        - label: If this is a shortcut not working, I tested a non-Super binding too
