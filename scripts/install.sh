@@ -3,8 +3,9 @@
 #   bash install.sh          - everything except keyd
 #   bash install.sh --keyd   - include the Cmd-key layer
 set -uo pipefail
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
 D="$(cd "$(dirname "$0")" && pwd)"
-[ "$EUID" -eq 0 ] && { echo "Run as your NORMAL user. It will sudo when needed."; exit 1; }
+require_user
 
 run_user() { echo; echo "### $1"; bash "$D/$1"; }
 run_root() { echo; echo "### $1 (sudo)"; sudo bash "$D/$1"; }
@@ -18,6 +19,8 @@ run_user 05-shortcuts.sh
 run_user 07-voice-sounds.sh
 run_root 08-snapshots.sh
 [ "${1:-}" = "--keyd" ] && run_root 06-keyd.sh
+
+run_user 09-verify.sh
 
 cat <<'MSG'
 

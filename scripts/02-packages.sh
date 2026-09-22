@@ -2,7 +2,9 @@
 # 02 - REPOS, CODECS, TOOLS
 # Run with: sudo bash 02-packages.sh
 set -uo pipefail
-[ "$EUID" -ne 0 ] && { echo "run with sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora
+require_root
 FED=$(rpm -E %fedora)
 
 echo "== dnf speed (Fedora ships an empty dnf.conf) =="

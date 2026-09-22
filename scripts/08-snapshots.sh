@@ -2,7 +2,9 @@
 # 08 - BTRFS SNAPSHOT SAFETY NET
 # Run with: sudo bash 08-snapshots.sh
 set -uo pipefail
-[ "$EUID" -ne 0 ] && { echo "run with sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora
+require_root
 findmnt -no FSTYPE / | grep -q btrfs || { echo "root is not btrfs - skipping"; exit 0; }
 
 dnf install -y --skip-unavailable snapper btrfs-assistant python3-dnf-plugin-snapper

@@ -7,7 +7,8 @@
 #
 # Run with: sudo bash 06-keyd.sh
 set -uo pipefail
-[ "$EUID" -ne 0 ] && { echo "run with sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_root
 REAL_USER="${SUDO_USER:-$(logname 2>/dev/null)}"
 
 echo "== Installing keyd =="
@@ -40,17 +41,16 @@ echo "keyd: $(systemctl is-active keyd)"
 echo "== GNOME overlay-key must be disabled =="
 # keyd's own macos.conf warns: Meta emitted by keyd gets swallowed by the
 # tap-Super-for-Activities behaviour.
-sudo -u "$REAL_USER" gsettings set org.gnome.mutter overlay-key '' 2>/dev/null
+as_user gsettings set org.gnome.mutter overlay-key '' 2>/dev/null
 
 echo "== Point the terminal at the clipboard media keys =="
 # ONLY once keyd is confirmed running. Doing this earlier removes
 # Ctrl+Shift+C/V with nothing to replace them = no copy/paste at all.
 if systemctl is-active --quiet keyd; then
-  sudo -u "$REAL_USER" gsettings set org.gnome.Ptyxis.Shortcuts copy-clipboard  'XF86Copy'
-  sudo -u "$REAL_USER" gsettings set org.gnome.Ptyxis.Shortcuts paste-clipboard 'XF86Paste'
-  echo "  Ptyxis -> XF86Copy/XF86Paste. Ctrl+C still interrupts."
+  set_terminal_clipboard 'XF86Copy' 'XF86Paste'
+  echo "  Ctrl+C is untouched and still interrupts."
 else
-  echo "  keyd not running - leaving Ctrl+Shift+C/V alone."
+  c_warn "keyd not running - leaving Ctrl+Shift+C/V alone so you always have copy/paste"
 fi
 
 cat <<'MSG'

@@ -3,7 +3,10 @@
 # Run as your NORMAL USER: bash 04-extensions.sh
 # Then LOG OUT AND BACK IN, and run it again to enable them.
 set -uo pipefail
-[ "$EUID" -eq 0 ] && { echo "run as your normal user, NOT sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora; require_gnome; warn_not_wayland
+require_cmds curl python3 git
+require_user
 SHELL_VER=$(gnome-shell --version | grep -oE '[0-9]+' | head -1)
 echo "GNOME Shell $SHELL_VER"
 
@@ -64,7 +67,8 @@ dconf write $BMS/window-list/blur false
 dconf write $BMS/appfolder/blur false
 dconf write $BMS/applications/blur true
 dconf write $BMS/applications/sigma 15
-dconf write $BMS/applications/whitelist "['org.gnome.Ptyxis','com.mitchellh.ghostty','com.raggesilver.BlackBox','org.gnome.Nautilus']"
+# Harmless to list terminals that are not installed - they are simply never matched.
+dconf write $BMS/applications/whitelist "['org.gnome.Ptyxis','com.mitchellh.ghostty','com.raggesilver.BlackBox','org.gnome.Console','org.gnome.Nautilus']"
 
 D2D=/org/gnome/shell/extensions/dash-to-dock
 dconf write $D2D/dock-position "'BOTTOM'"

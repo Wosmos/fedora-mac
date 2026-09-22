@@ -2,6 +2,7 @@
 # 00 - PREFLIGHT: capture the machine's state BEFORE changing anything.
 # Run as your normal user: bash 00-preflight.sh
 set -uo pipefail
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
 OUT="$HOME/.config/fedora-macos-setup-backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT"
 

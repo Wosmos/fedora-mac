@@ -3,7 +3,8 @@
 # Run as your NORMAL USER: bash 07-voice-sounds.sh
 # Everything lives in $HOME - no sudo, no system Python touched.
 set -uo pipefail
-[ "$EUID" -eq 0 ] && { echo "run as your normal user, NOT sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_user
 
 # WARNING: the 'piper' RPM in Fedora's repos is a GAMING MOUSE tool.
 # Piper TTS is not packaged for Fedora at all - hence this venv.

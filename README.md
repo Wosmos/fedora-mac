@@ -42,7 +42,26 @@ bash install.sh --keyd     # include it
 
 Run as your **normal user** — it calls `sudo` where needed. Then log out and back in.
 
-Every script is idempotent and safe to re-run.
+Every script is idempotent and safe to re-run. To check the result at any point:
+
+```bash
+bash scripts/09-verify.sh
+```
+
+### Portability
+
+`lib/common.sh` holds shared guards. The scripts refuse to run on a non-Fedora or
+non-GNOME system, warn on X11, check for required commands and network before
+downloading, and adapt to the machine rather than assuming the reference hardware:
+
+- no battery (desktop) → charge-limit step is skipped
+- no zram → swappiness is left alone, because 150 is only correct for compressed swap
+- no btrfs → snapshot script exits cleanly
+- AMD instead of Intel → warns, then applies the governor settings anyway
+- a terminal other than Ptyxis → says so instead of silently doing nothing
+
+No usernames or absolute home paths are baked in; everything resolves the invoking
+user even under `sudo`.
 
 ---
 
@@ -59,6 +78,7 @@ Every script is idempotent and safe to re-run.
 | `06-keyd.sh` | **sudo** | Optional. Super-as-Cmd across every application. Most invasive step. |
 | `07-voice-sounds.sh` | user | Replaces robotic espeak-ng with Piper neural TTS. |
 | `08-snapshots.sh` | **sudo** | btrfs snapshot safety net via snapper, with dnf integration. |
+| `09-verify.sh` | user | Read-only. Checks every change actually took. Run it any time. |
 
 ---
 

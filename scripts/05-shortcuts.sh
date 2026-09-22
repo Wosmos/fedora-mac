@@ -2,7 +2,9 @@
 # 05 - macOS-STYLE GNOME SHORTCUTS (no keyd needed for these)
 # Run as your NORMAL USER: bash 05-shortcuts.sh
 set -uo pipefail
-[ "$EUID" -eq 0 ] && { echo "run as your normal user, NOT sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora; require_gnome; warn_not_wayland
+require_user
 
 echo "== Screenshots (macOS Cmd+Shift+3/4/5) =="
 gsettings set org.gnome.shell.keybindings screenshot            "['<Shift><Super>3']"

@@ -2,7 +2,10 @@
 # 03 - macOS LOOK (WhiteSur theme, icons, cursors, fonts, wallpaper, sounds)
 # Run as your NORMAL USER: bash 03-theme.sh
 set -uo pipefail
-[ "$EUID" -eq 0 ] && { echo "run as your normal user, NOT sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora; require_gnome; warn_not_wayland
+require_cmds git sassc
+require_user
 SRC="$HOME/Downloads/whitesur"; mkdir -p "$SRC"
 
 clone_or_update() {

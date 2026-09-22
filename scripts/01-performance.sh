@@ -5,7 +5,9 @@
 #
 # Run with: sudo bash 01-performance.sh
 set -uo pipefail
-[ "$EUID" -ne 0 ] && { echo "run with sudo"; exit 1; }
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
+require_fedora
+require_root
 
 echo "== Removing any forced-performance CPU tuning =="
 # A 'performance' governor on a 15W laptop CPU is actively harmful: it boosts
@@ -24,6 +26,8 @@ systemctl enable --now power-profiles-daemon.service
 systemctl disable --now tuned.service 2>/dev/null
 
 echo "== Sane CPU energy policy =="
+# Valid on both intel_pstate and amd-pstate. Anything unsupported is skipped.
+is_intel_pstate || c_warn "intel_pstate not in use (vendor: $(cpu_vendor)) - applying anyway"
 # 'powersave' is the CORRECT intel_pstate governor on a laptop. It still
 # reaches full turbo on demand; it just doesn't sprint there to run `ls`.
 for c in /sys/devices/system/cpu/cpu*/cpufreq; do
@@ -32,23 +36,37 @@ for c in /sys/devices/system/cpu/cpu*/cpufreq; do
 done
 
 echo "== zram-correct swappiness =="
-echo 'vm.swappiness=150' > /etc/sysctl.d/99-zram-swappiness.conf
-sysctl -w vm.swappiness=150 >/dev/null
+# 150 is right for COMPRESSED swap (zram). On a plain disk swap partition it
+# would be far too aggressive, so only apply it when zram is actually present.
+if has_zram; then
+  echo 'vm.swappiness=150' > /etc/sysctl.d/99-zram-swappiness.conf
+  sysctl -w vm.swappiness=150 >/dev/null
+  c_ok "swappiness 150 (zram)"
+else
+  c_warn "no zram - leaving swappiness alone"
+fi
 
-echo "== Battery charge limit 80% (skip if you want full capacity) =="
-if [ -w /sys/class/power_supply/BAT0/charge_control_end_threshold ]; then
-  echo 80 > /sys/class/power_supply/BAT0/charge_control_end_threshold
-  cat > /etc/systemd/system/battery-charge-limit.service <<'UNIT'
+echo "== Battery charge limit 80% =="
+# Desktops have no battery; many laptops do not expose a threshold at all.
+BAT="$(battery_path)"
+if [ -n "$BAT" ] && [ -w "$BAT/charge_control_end_threshold" ]; then
+  echo 80 > "$BAT/charge_control_end_threshold"
+  cat > /etc/systemd/system/battery-charge-limit.service <<UNIT
 [Unit]
 Description=Limit battery charge to 80%
 After=multi-user.target
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'echo 80 > /sys/class/power_supply/BAT0/charge_control_end_threshold'
+ExecStart=/bin/sh -c 'echo 80 > $BAT/charge_control_end_threshold'
 [Install]
 WantedBy=multi-user.target
 UNIT
   systemctl enable battery-charge-limit.service 2>/dev/null
+  c_ok "charge limit 80% on $(basename "$BAT")"
+elif [ -z "$BAT" ]; then
+  c_warn "no battery detected (desktop?) - skipping charge limit"
+else
+  c_warn "this machine exposes no charge threshold - skipping"
 fi
 
 echo
