@@ -1,0 +1,10 @@
+{
+  "name": "fedora-macos-setup",
+  "short_name": "fedora-macos",
+  "description": "Make Fedora feel like macOS - and stop it thermal-throttling.",
+  "start_url": "/fedora-macos-setup/",
+  "display": "standalone",
+  "background_color": "#0B0E14",
+  "theme_color": "#0B0E14",
+  "icons": []
+}
