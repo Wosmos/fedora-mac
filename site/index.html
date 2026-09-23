@@ -175,35 +175,37 @@ cd fedora-mac/scripts && bash install.sh</code>
 
     <div class="split">
       <figure style="margin:0">
-        <div class="compare" data-compare>
-          <img class="before-img" src="assets/shots/before-files.png" alt="Stock Fedora Files window with default Adwaita theming" loading="lazy" decoding="async">
-          <img class="after-img" src="assets/shots/after-files.png" alt="The same Files window with WhiteSur theming, rounded corners and macOS-style controls" loading="lazy" decoding="async">
+        <div class="compare" data-compare style="aspect-ratio:1080/1094">
+          <img class="before-img" src="assets/shots/before-app.png" width="1080" height="1094" alt="dconf Editor with Fedora's stock Adwaita dark theme: square window buttons, a vivid blue search bar and square window corners" loading="lazy" decoding="async">
+          <img class="after-img" src="assets/shots/after-app.png" width="1080" height="1094" alt="The same dconf Editor window with WhiteSur: red, amber and green traffic-light buttons, a muted grey search bar and rounded corners" loading="lazy" decoding="async">
           <span class="tagline t-before">stock</span>
           <span class="tagline t-after">after</span>
-          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed Files window">
+          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed dconf Editor window">
           <span class="handle" aria-hidden="true"></span>
         </div>
-        <figcaption class="compare-cap">Files — default Adwaita against WhiteSur</figcaption>
+        <figcaption class="compare-cap">Window controls, search bar and corner radius</figcaption>
       </figure>
 
       <figure style="margin:0">
-        <div class="compare" data-compare>
-          <img class="before-img" src="assets/shots/before-editor.png" alt="Stock Fedora text editor with default theming" loading="lazy" decoding="async">
-          <img class="after-img" src="assets/shots/after-terminal.png" alt="Themed terminal with translucency and background blur" loading="lazy" decoding="async">
+        <div class="compare" data-compare style="aspect-ratio:1200/955">
+          <img class="before-img" src="assets/shots/before-window.png" width="1200" height="955" alt="GNOME Connections with stock Adwaita dark theming" loading="lazy" decoding="async">
+          <img class="after-img" src="assets/shots/after-window.png" width="1200" height="955" alt="GNOME Connections with WhiteSur theming applied" loading="lazy" decoding="async">
           <span class="tagline t-before">stock</span>
           <span class="tagline t-after">after</span>
-          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed window">
+          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed Connections window">
           <span class="handle" aria-hidden="true"></span>
         </div>
-        <figcaption class="compare-cap">Application chrome, fonts and window controls</figcaption>
+        <figcaption class="compare-cap">Header bar, surfaces and window shape</figcaption>
       </figure>
     </div>
 
     <div class="note">
-      <strong>An honest note on the screenshots.</strong> The “stock” shots are real
-      application windows launched with <code>GTK_THEME=Adwaita:dark</code>, so they show
-      genuine Fedora defaults without reverting a working machine. A full stock
-      <em>desktop</em> shot would need a VM or live ISO — so it isn’t claimed here.
+      <strong>How these were made.</strong> Both halves of each pair are the same
+      application, launched twice on the same machine at the same size — once with
+      Fedora&rsquo;s stock <code>Adwaita:dark</code> and once with WhiteSur — and captured
+      window-by-window. Nothing is mocked up or borrowed. GTK3 applications are used
+      because GTK4/libadwaita apps ignore <code>GTK_THEME</code> entirely, so they
+      cannot show a stock-versus-themed comparison at all.
     </div>
   </div>
 </section>

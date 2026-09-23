@@ -1,19 +1,40 @@
 name: Archive traffic
-# GitHub keeps repo traffic for 14 days and then discards it. This snapshots
-# it weekly into docs/traffic/ so the history survives.
+# GitHub keeps repo traffic for only 14 days. This snapshots it weekly so the
+# history survives.
+#
+# REQUIRES A PAT. The built-in GITHUB_TOKEN is refused by the /traffic/
+# endpoints with "Resource not accessible by integration" (HTTP 403), so this
+# needs a fine-grained personal access token with read access to repository
+# "Administration", stored as the repository secret TRAFFIC_TOKEN.
+# Without it the job skips rather than failing.
 on:
-  schedule: [{cron: '17 4 * * 1'}]   # Mondays 04:17 UTC
+  schedule: [{cron: '17 4 * * 1'}]
   workflow_dispatch:
 
 permissions: {contents: write}
 
 jobs:
   snapshot:
+    if: github.repository_owner != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check for a usable token
+        id: gate
+        env: {TRAFFIC_TOKEN: "${{ secrets.TRAFFIC_TOKEN }}"}
+        run: |
+          if [ -z "${TRAFFIC_TOKEN}" ]; then
+            echo "No TRAFFIC_TOKEN secret set — skipping."
+            echo "The default GITHUB_TOKEN cannot read /traffic/ endpoints."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Fetch and merge traffic data
-        env: {GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"}
+        if: steps.gate.outputs.go == 'true'
+        env: {GH_TOKEN: "${{ secrets.TRAFFIC_TOKEN }}"}
         run: |
           set -euo pipefail
           mkdir -p docs/traffic
@@ -21,16 +42,17 @@ jobs:
             gh api "repos/${GITHUB_REPOSITORY}/traffic/${kind}" > "/tmp/${kind}.json"
             f="docs/traffic/${kind}.json"
             [ -f "$f" ] || echo '[]' > "$f"
-            # merge on timestamp so re-runs do not duplicate days
             jq -s --arg k "$kind" '
               (.[0] + (.[1][$k] // []))
               | group_by(.timestamp) | map(max_by(.count))
               | sort_by(.timestamp)
-            ' "$f" "/tmp/${kind}.json" > "/tmp/merged.json"
-            mv "/tmp/merged.json" "$f"
+            ' "$f" "/tmp/${kind}.json" > /tmp/merged.json
+            mv /tmp/merged.json "$f"
             echo "$kind: $(jq 'length' "$f") days on record"
           done
+
       - name: Commit if anything changed
+        if: steps.gate.outputs.go == 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

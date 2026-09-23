@@ -265,7 +265,11 @@ Two separate things, because they measure different audiences.
 **Repo traffic** is built into GitHub — views, clones, referrers and popular
 paths, no script required. Its catch is a **14-day window**, after which the data
 is gone. `.github/workflows/traffic.yml` snapshots it weekly into
-`docs/traffic/` so the history survives.
+`docs/traffic/` so the history survives. It needs a fine-grained PAT with read
+access to repository **Administration**, stored as the secret `TRAFFIC_TOKEN` —
+the built-in `GITHUB_TOKEN` is refused by the `/traffic/` endpoints with
+`Resource not accessible by integration`. Without the secret the job skips
+rather than failing.
 
 ```bash
 gh api repos/Wosmos/fedora-mac/traffic/views
