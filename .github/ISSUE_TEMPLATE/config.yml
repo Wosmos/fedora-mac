@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Troubleshooting guide
-    url: https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/TROUBLESHOOTING.md
+    url: https://github.com/Wosmos/fedora-mac/blob/master/docs/TROUBLESHOOTING.md
     about: Most known failures and their real fixes are documented here first.
   - name: furnizsh
     url: https://github.com/Wosmos/furnizsh

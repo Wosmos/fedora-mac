@@ -1,6 +1,6 @@
 <div align="center">
 
-# fedora-macos-setup
+# fedora-mac
 
 **Make Fedora feel like macOS — and stop it thermal-throttling.**
 
@@ -8,7 +8,7 @@ Ten scripts for a Fedora GNOME/Wayland workstation: the macOS look and feel,
 macOS-style shortcuts, a natural text-to-speech voice, and the performance fix
 that mattered more than all the theming put together.
 
-[**Site**](https://wosmos.github.io/fedora-macos-setup) ·
+[**Site**](https://wosmos.github.io/fedora-mac) ·
 [Architecture](docs/ARCHITECTURE.md) ·
 [Shortcuts](docs/SHORTCUTS.md) ·
 [Troubleshooting](docs/TROUBLESHOOTING.md) ·
@@ -35,8 +35,8 @@ that mattered more than all the theming put together.
 ## Install
 
 ```bash
-git clone https://github.com/Wosmos/fedora-macos-setup ~/fedora-macos-setup
-cd ~/fedora-macos-setup/scripts
+git clone https://github.com/Wosmos/fedora-mac ~/fedora-mac
+cd ~/fedora-mac/scripts
 bash install.sh            # everything except the Cmd-key layer
 bash install.sh --keyd     # include it
 ```
@@ -257,6 +257,17 @@ and 24 helper commands. This repo assumes a terminal exists but doesn't require
 furnizsh specifically.
 
 ---
+
+## Analytics
+
+The site uses [GoatCounter](https://www.goatcounter.com) — no cookies, no
+cross-site tracking, and no consent banner required. It is **off by default**:
+nothing loads until a site code is set in `site/index.html`.
+
+GitHub Pages was kept rather than moving to Vercel or Cloudflare, since hosting
+lives next to the repo and a static page gains nothing from a second deploy
+target. `vercel.json` is committed anyway, with security headers and asset
+caching, if you ever want `vercel --prod`.
 
 ## Contributing
 

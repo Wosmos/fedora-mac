@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>fedora-macos-setup — Make Fedora look like macOS and fix CPU throttling</title>
+<title>fedora-mac — Make Fedora look like macOS and fix CPU throttling</title>
 <meta name="description" content="Ten reversible scripts that give Fedora GNOME a macOS look and feel, macOS keyboard shortcuts and a neural text-to-speech voice — plus the CPU governor fix that took one laptop from thermal throttling 27% of the time at 89°C to 0% at 61°C.">
 <meta name="author" content="Muhammad Wasif Malik">
 <meta name="keywords" content="fedora macos theme, gnome macos, whitesur fedora, fedora thermal throttling, cpu governor fedora, keyd macos shortcuts, gnome wayland customisation, piper tts linux">
 <meta name="color-scheme" content="dark light">
-<link rel="canonical" href="https://wosmos.github.io/fedora-macos-setup/">
+<link rel="canonical" href="https://wosmos.github.io/fedora-mac/">
 
-<meta property="og:title" content="fedora-macos-setup — Make Fedora look like macOS and fix CPU throttling">
+<meta property="og:title" content="fedora-mac — Make Fedora look like macOS and fix CPU throttling">
 <meta property="og:description" content="Ten reversible scripts: macOS look and feel for Fedora GNOME, macOS shortcuts, neural TTS — and the governor fix that took throttling from 27% of wall-clock time to 0%.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://wosmos.github.io/fedora-macos-setup/">
-<meta property="og:site_name" content="fedora-macos-setup">
+<meta property="og:url" content="https://wosmos.github.io/fedora-mac/">
+<meta property="og:site_name" content="fedora-mac">
 <meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="fedora-macos-setup">
+<meta name="twitter:title" content="fedora-mac">
 <meta name="twitter:description" content="Make Fedora feel like macOS — and stop it thermal-throttling. Ten reversible scripts.">
 
 <meta name="theme-color" content="#0B0E14" media="(prefers-color-scheme: dark)">
@@ -36,14 +36,14 @@
   "@graph": [
     {
       "@type": "SoftwareSourceCode",
-      "name": "fedora-macos-setup",
+      "name": "fedora-mac",
       "description": "Ten reversible shell scripts that give Fedora GNOME/Wayland a macOS look and feel, macOS-style keyboard shortcuts and neural text-to-speech, plus CPU governor fixes that eliminate thermal throttling.",
-      "codeRepository": "https://github.com/Wosmos/fedora-macos-setup",
+      "codeRepository": "https://github.com/Wosmos/fedora-mac",
       "programmingLanguage": "Shell",
       "runtimePlatform": "Fedora Linux, GNOME, Wayland",
       "license": "https://opensource.org/licenses/MIT",
       "author": { "@type": "Person", "name": "Muhammad Wasif Malik", "url": "https://github.com/Wosmos" },
-      "url": "https://wosmos.github.io/fedora-macos-setup/"
+      "url": "https://wosmos.github.io/fedora-mac/"
     },
     {
       "@type": "FAQPage",
@@ -80,13 +80,13 @@
 
 <nav class="topnav" aria-label="Main">
   <div class="inner">
-    <a class="brand" href="#top"><span class="mark" aria-hidden="true">~</span> fedora-macos-setup</a>
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true">~</span> fedora-mac</a>
     <div class="navlinks">
       <a href="#results">Results</a>
       <a href="#compare">Before &amp; after</a>
       <a href="#scripts">Scripts</a>
       <a href="#details">Details</a>
-      <a href="https://github.com/Wosmos/fedora-macos-setup">GitHub</a>
+      <a href="https://github.com/Wosmos/fedora-mac">GitHub</a>
     </div>
     <button class="themetoggle" id="theme" type="button" aria-label="Switch between light and dark theme">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
@@ -120,8 +120,8 @@
       </div>
       <div class="term-body">
         <span class="p" aria-hidden="true">$</span>
-        <code id="cmd">git clone https://github.com/Wosmos/fedora-macos-setup
-cd fedora-macos-setup/scripts && bash install.sh</code>
+        <code id="cmd">git clone https://github.com/Wosmos/fedora-mac
+cd fedora-mac/scripts && bash install.sh</code>
         <button class="copy" id="copy" type="button">copy<span class="visually-hidden"> install command</span></button>
       </div>
     </div>
@@ -332,7 +332,7 @@ cd fedora-macos-setup/scripts && bash install.sh</code>
       <strong>Read before you run any of this.</strong> It installs a kernel-level key
       remapper that sees every keystroke, and can replace a system file the login screen
       depends on. Both are reversible, and both are documented.
-      <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/SECURITY.md">SECURITY.md</a>
+      <a href="https://github.com/Wosmos/fedora-mac/blob/master/SECURITY.md">SECURITY.md</a>
     </div>
   </div>
 </section>
@@ -347,7 +347,7 @@ cd fedora-macos-setup/scripts && bash install.sh</code>
         <p>The terminal half of the same setup — Ghostty, zsh and Starship, installed and themed together. Assumed here, but not required.</p>
       </div>
       <a class="btn ghost" href="https://github.com/Wosmos/furnizsh">View furnizsh</a>
-      <a class="btn" href="https://github.com/Wosmos/fedora-macos-setup">Get started</a>
+      <a class="btn" href="https://github.com/Wosmos/fedora-mac">Get started</a>
     </div>
   </div>
 </section>
@@ -357,10 +357,10 @@ cd fedora-macos-setup/scripts && bash install.sh</code>
 <footer>
   <div class="inner">
     <span>MIT licensed.</span>
-    <a href="https://github.com/Wosmos/fedora-macos-setup">Source</a>
-    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/ARCHITECTURE.md">Architecture</a>
-    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/docs/TROUBLESHOOTING.md">Troubleshooting</a>
-    <a href="https://github.com/Wosmos/fedora-macos-setup/blob/master/CONTRIBUTING.md">Contributing</a>
+    <a href="https://github.com/Wosmos/fedora-mac">Source</a>
+    <a href="https://github.com/Wosmos/fedora-mac/blob/master/docs/ARCHITECTURE.md">Architecture</a>
+    <a href="https://github.com/Wosmos/fedora-mac/blob/master/docs/TROUBLESHOOTING.md">Troubleshooting</a>
+    <a href="https://github.com/Wosmos/fedora-mac/blob/master/CONTRIBUTING.md">Contributing</a>
     <img class="wordmark" src="assets/img/wosmo-wordmark.svg" alt="wosmo" width="120" height="16" loading="lazy" decoding="async">
   </div>
 </footer>
@@ -433,6 +433,29 @@ cd fedora-macos-setup/scripts && bash install.sh</code>
     document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
     document.querySelectorAll('.bar-fill').forEach(function (b) { b.classList.add('in'); });
   }
+})();
+</script>
+
+<!-- ============================================================
+     Analytics — GoatCounter.
+     Privacy-first: no cookies, no cross-site tracking, no consent
+     banner required. Nothing loads at all while GC_CODE is empty.
+
+     To switch it on:
+       1. Register free at https://www.goatcounter.com  (~2 minutes)
+       2. Put your site code below — the "xxx" in xxx.goatcounter.com
+       3. Commit and push; it deploys with the page.
+     ============================================================ -->
+<script>
+(function () {
+  var GC_CODE = "";               // <-- your goatcounter code goes here
+  if (!GC_CODE) return;           // not configured: load nothing
+  if (location.hostname === "localhost" || location.hostname === "127.0.0.1") return;
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "//gc.zgo.at/count.js";
+  s.setAttribute("data-goatcounter", "https://" + GC_CODE + ".goatcounter.com/count");
+  document.head.appendChild(s);
 })();
 </script>
 </body>

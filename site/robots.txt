@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://wosmos.github.io/fedora-macos-setup/sitemap.xml
+Sitemap: https://wosmos.github.io/fedora-mac/sitemap.xml

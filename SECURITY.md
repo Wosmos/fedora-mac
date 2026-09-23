@@ -18,7 +18,7 @@ for exactly that reason.
 
 Do **not** open a public issue for a security problem.
 
-Use [GitHub's private vulnerability reporting](https://github.com/Wosmos/fedora-macos-setup/security/advisories/new),
+Use [GitHub's private vulnerability reporting](https://github.com/Wosmos/fedora-mac/security/advisories/new),
 or contact the maintainer through [GitHub](https://github.com/Wosmos).
 
 Please include what an attacker could achieve, and the affected script or config.
