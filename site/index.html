@@ -82,10 +82,10 @@
   <div class="inner">
     <a class="brand" href="#top"><span class="mark" aria-hidden="true">~</span> fedora-mac</a>
     <div class="navlinks">
-      <a href="#results">Results</a>
-      <a href="#compare">Before &amp; after</a>
+      <a href="#results">Measurement</a>
+      <a href="#compare">Appearance</a>
       <a href="#scripts">Scripts</a>
-      <a href="#details">Details</a>
+      <a href="#details">Settings</a>
       <a href="https://github.com/Wosmos/fedora-mac">GitHub</a>
     </div>
     <button class="themetoggle" id="theme" type="button" aria-label="Switch between light and dark theme">
@@ -98,20 +98,20 @@
 
 <header class="hero" id="top">
   <div class="wrap">
-    <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> Fedora 44 · GNOME 50 · Wayland</p>
-    <h1>Make Fedora feel like macOS.<br><span class="grad">And stop it throttling.</span></h1>
+    <p class="eyebrow">Fedora 44 · GNOME 50 · Wayland · ten shell scripts</p>
+    <h1>Make Fedora feel like macOS.<br><span class="sub">And stop it throttling.</span></h1>
     <p class="tag">
-      Ten scripts for a Fedora GNOME workstation — the macOS look and feel,
-      macOS-style shortcuts, a natural text-to-speech voice, and the performance
-      fix that mattered more than all the theming put together.
+      A macOS look and feel for Fedora GNOME, macOS-style shortcuts, a neural
+      text-to-speech voice, and a CPU governor fix that turned out to matter more
+      than everything else combined.
     </p>
 
-    <p class="badges">
-      <span class="badge ok">idempotent</span>
-      <span class="badge ok">reversible</span>
-      <span class="badge ok">MIT</span>
-      <span class="badge warn">tested on 1 machine</span>
-    </p>
+    <ul class="facts" aria-label="Project facts">
+      <li>idempotent</li>
+      <li>reversible</li>
+      <li>MIT</li>
+      <li class="warn">tested on one machine</li>
+    </ul>
 
     <div class="term">
       <div class="term-bar">
@@ -125,7 +125,7 @@ cd fedora-mac/scripts && bash install.sh</code>
         <button class="copy" id="copy" type="button">copy<span class="visually-hidden"> install command</span></button>
       </div>
     </div>
-    <p class="hero-note">Runs as your normal user and calls <code>sudo</code> only where noted. Backs up your entire dconf first.</p>
+    <p class="hero-note">Runs as your normal user and calls <code>sudo</code> only where noted. Script 00 backs up your entire dconf before anything changes.</p>
   </div>
 </header>
 
@@ -133,111 +133,248 @@ cd fedora-mac/scripts && bash install.sh</code>
 
 <section id="results" aria-labelledby="h-results">
   <div class="wrap">
-    <p class="sec-label">01 — The point</p>
+    <p class="sec-label">01 — Measurement</p>
     <h2 id="h-results">It was never a theming problem</h2>
     <p class="lede">
       The machine was being throttled by its own CPU governor. A <code>performance</code>
-      governor on a <strong>15&nbsp;W</strong> laptop chip: it sprinted to maximum turbo for
-      trivial work, exceeded its thermal headroom in milliseconds, got cut by PROCHOT,
-      and repeated — thousands of times a second.
+      governor with <code>energy_performance_preference=performance</code> on a
+      <strong>15&nbsp;W</strong> laptop chip: it jumped to maximum turbo for trivial work,
+      exceeded its thermal headroom in milliseconds, was cut by PROCHOT, recovered and
+      repeated. 24,440 times in one boot, while idle.
     </p>
 
-    <div class="headline-stat reveal">
-      <div class="hs-side"><p class="hs-num bad">27%</p><p class="hs-cap">before</p></div>
-      <p class="hs-arrow" aria-hidden="true">→</p>
-      <div class="hs-side"><p class="hs-num good">0%</p><p class="hs-cap">after</p></div>
-      <p class="hs-what">of wall-clock time spent thermally throttled, measured at idle</p>
+    <figure class="hero-figure">
+      <div class="hf-pair">
+        <div class="hf-cell">
+          <p class="hf-label">Before</p>
+          <p class="hf-value">27<span class="hf-unit">%</span></p>
+        </div>
+        <div class="hf-cell">
+          <p class="hf-label">After</p>
+          <p class="hf-value">0<span class="hf-unit">%</span></p>
+        </div>
+      </div>
+      <figcaption>
+        Share of wall-clock time the CPU package spent thermally throttled, at idle,
+        read from the cumulative counter
+        <code>/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms</code>.
+      </figcaption>
+    </figure>
+
+    <div class="two">
+      <table class="detail">
+        <caption>Measured at idle, same machine, same session type</caption>
+        <thead><tr><th scope="col">Quantity</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+        <tbody>
+          <tr><td>Time thermally throttled</td><td class="was">26–27% of wall clock</td><td class="now">0%</td></tr>
+          <tr><td>Throttle events per boot</td><td class="was">24,440</td><td class="now">0</td></tr>
+          <tr><td>Package temperature</td><td class="was">82–89 °C</td><td class="now">51–61 °C</td></tr>
+          <tr><td>Fan</td><td class="was">3500 rpm</td><td class="now">0 rpm</td></tr>
+          <tr><td>Clock at idle</td><td class="was">400 MHz or 4.2–4.8 GHz, nothing between</td><td class="now">400–1100 MHz, stepped</td></tr>
+        </tbody>
+      </table>
+
+      <table class="detail">
+        <caption>Frequency samples at idle</caption>
+        <thead><tr><th scope="col">Sample bucket</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+        <tbody>
+          <tr><td>At minimum, 400 MHz</td><td class="was">about half</td><td class="now">about half</td></tr>
+          <tr><td>At max turbo, 4.2–4.8 GHz</td><td class="was">about half</td><td class="now">none</td></tr>
+          <tr><td>Anywhere in between</td><td class="was">1 of 96</td><td class="now">most</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="bars reveal">
-      <div class="bar-row"><span class="lbl">temp before</span><span class="bar-track"><span class="bar-fill bad" style="width:89%"></span></span><span class="val bad">89 °C</span></div>
-      <div class="bar-row"><span class="lbl">temp after</span><span class="bar-track"><span class="bar-fill good" style="width:61%"></span></span><span class="val good">61 °C</span></div>
-      <div class="bar-row"><span class="lbl">fan before</span><span class="bar-track"><span class="bar-fill bad" style="width:66%"></span></span><span class="val bad">3500 rpm</span></div>
-      <div class="bar-row"><span class="lbl">fan after</span><span class="bar-track"><span class="bar-fill good" style="width:2%"></span></span><span class="val good">0 rpm</span></div>
-    </div>
+    <p class="fine">
+      The missing middle gear is the signature. Dell Latitude 5400, i7-8665U, UHD 620.
+      No hardware was changed; the fix is script 01.
+    </p>
 
-    <p class="lede" style="margin:0 0 6px">Dell Latitude 5400, i7-8665U, UHD 620. No hardware was changed.</p>
+    <div class="method">
+      <p class="method-h">Check your own machine before blaming anything else</p>
+<pre><code>cat /sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms
+cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference</code></pre>
+      <p>A non-zero first value that keeps climbing while the machine is idle, together with <code>performance</code> in the second, is the fault this project fixes.</p>
+    </div>
 
     <div class="note">
       <strong>Spot temperature readings lie.</strong> Sampling <code>sensors</code> every two
       seconds showed a comfortable 61–68 °C while the CPU was throttling a quarter of the
-      time — the samples were landing in the valleys between millisecond spikes. Read the
-      cumulative counters in <code>/sys/devices/system/cpu/cpu0/thermal_throttle/</code> instead.
+      time. The samples were landing in the valleys between millisecond spikes. Trust the
+      cumulative counters, not the thermometer.
     </div>
   </div>
 </section>
 
 <section id="compare" aria-labelledby="h-compare">
   <div class="wrap">
-    <p class="sec-label">02 — Seen side by side</p>
-    <h2 id="h-compare">Stock Fedora, and what these scripts make of it</h2>
-    <p class="lede">Drag the handle, or focus it and use the arrow keys.</p>
+    <p class="sec-label">02 — Appearance</p>
+    <h2 id="h-compare">What changes on screen, keyed to the setting that changes it</h2>
+    <p class="lede">
+      Two schematic diagrams of the same desktop. Every numbered difference is
+      produced by a specific <code>gsettings</code> or <code>dconf</code> key written by
+      scripts 03 and 04; the list below names each one.
+    </p>
 
     <div class="split">
-      <figure style="margin:0">
-        <div class="compare" data-compare style="aspect-ratio:1080/1094">
-          <img class="before-img" src="assets/shots/before-app.png" width="1080" height="1094" alt="dconf Editor with Fedora's stock Adwaita dark theme: square window buttons, a vivid blue search bar and square window corners" loading="lazy" decoding="async">
-          <img class="after-img" src="assets/shots/after-app.png" width="1080" height="1094" alt="The same dconf Editor window with WhiteSur: red, amber and green traffic-light buttons, a muted grey search bar and rounded corners" loading="lazy" decoding="async">
-          <span class="tagline t-before">stock</span>
-          <span class="tagline t-after">after</span>
-          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed dconf Editor window">
-          <span class="handle" aria-hidden="true"></span>
-        </div>
-        <figcaption class="compare-cap">Window controls, search bar and corner radius</figcaption>
+      <figure class="dg">
+        <figcaption><span class="dg-tag">Stock</span> Fedora 44, GNOME 50, Adwaita</figcaption>
+        <svg class="dg-svg" viewBox="0 0 480 300" role="img" aria-labelledby="dg-stock-title" aria-describedby="dg-legend" focusable="false">
+          <title id="dg-stock-title">Schematic of a stock GNOME desktop: opaque black top bar, a window with a single close button on the right and square bottom corners, and no dock on the desktop</title>
+          <rect class="dg-desktop" x="0" y="0" width="480" height="300"/>
+          <!-- top bar: opaque -->
+          <rect class="dg-bar solid" x="0" y="0" width="480" height="22"/>
+          <rect class="dg-pill on" x="12" y="8" width="16" height="6" rx="3"/>
+          <rect class="dg-pill" x="32" y="8" width="8" height="6" rx="3"/>
+          <text class="dg-clock" x="240" y="15" text-anchor="middle">Tue 14:02</text>
+          <rect class="dg-tray" x="404" y="7" width="10" height="8" rx="1"/>
+          <rect class="dg-tray" x="420" y="7" width="10" height="8" rx="1"/>
+          <rect class="dg-tray" x="436" y="7" width="12" height="8" rx="1"/>
+          <!-- window: rounded top, square bottom -->
+          <path class="dg-win" d="M60 58 a10 10 0 0 1 10 -10 h340 a10 10 0 0 1 10 10 v190 h-360 z"/>
+          <path class="dg-head flat" d="M60 58 a10 10 0 0 1 10 -10 h340 a10 10 0 0 1 10 10 v24 h-360 z"/>
+          <line class="dg-hair" x1="60" y1="82" x2="420" y2="82"/>
+          <text class="dg-title bold" x="240" y="69" text-anchor="middle">Files</text>
+          <circle class="dg-btn" cx="398" cy="65" r="8"/>
+          <path class="dg-x" d="M395 62 l6 6 M401 62 l-6 6"/>
+          <!-- sidebar and content -->
+          <rect class="dg-side" x="60" y="82" width="104" height="166"/>
+          <rect class="dg-row sel" x="68" y="92" width="88" height="12" rx="3"/>
+          <rect class="dg-row" x="68" y="110" width="76" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="124" width="82" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="138" width="60" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="152" width="72" height="6" rx="3"/>
+          <g class="dg-files">
+            <rect x="184" y="100" width="34" height="26" rx="3"/><rect x="236" y="100" width="34" height="26" rx="3"/><rect x="288" y="100" width="34" height="26" rx="3"/><rect x="340" y="100" width="34" height="26" rx="3"/>
+            <rect x="184" y="152" width="34" height="26" rx="3"/><rect x="236" y="152" width="34" height="26" rx="3"/><rect x="288" y="152" width="34" height="26" rx="3"/>
+          </g>
+          <!-- no dock on the desktop -->
+          <rect class="dg-absent" x="140" y="258" width="200" height="34" rx="8"/>
+          <!-- callouts -->
+          <g class="dg-mark"><circle cx="418" cy="46" r="9"/><text x="418" y="49.5" text-anchor="middle">1</text></g>
+          <g class="dg-mark"><circle cx="150" cy="46" r="9"/><text x="150" y="49.5" text-anchor="middle">2</text></g>
+          <g class="dg-mark"><circle cx="420" cy="250" r="9"/><text x="420" y="253.5" text-anchor="middle">3</text></g>
+          <g class="dg-mark"><circle cx="276" cy="65" r="9"/><text x="276" y="68.5" text-anchor="middle">4</text></g>
+          <g class="dg-mark"><circle cx="464" cy="11" r="9"/><text x="464" y="14.5" text-anchor="middle">5</text></g>
+          <g class="dg-mark"><circle cx="354" cy="275" r="9"/><text x="354" y="278.5" text-anchor="middle">6</text></g>
+        </svg>
       </figure>
 
-      <figure style="margin:0">
-        <div class="compare" data-compare style="aspect-ratio:1200/955">
-          <img class="before-img" src="assets/shots/before-window.png" width="1200" height="955" alt="GNOME Connections with stock Adwaita dark theming" loading="lazy" decoding="async">
-          <img class="after-img" src="assets/shots/after-window.png" width="1200" height="955" alt="GNOME Connections with WhiteSur theming applied" loading="lazy" decoding="async">
-          <span class="tagline t-before">stock</span>
-          <span class="tagline t-after">after</span>
-          <input type="range" min="0" max="100" value="50" aria-label="Reveal more of the stock or themed Connections window">
-          <span class="handle" aria-hidden="true"></span>
-        </div>
-        <figcaption class="compare-cap">Header bar, surfaces and window shape</figcaption>
+      <figure class="dg">
+        <figcaption><span class="dg-tag after">After</span> scripts 03 and 04, WhiteSur-Dark</figcaption>
+        <svg class="dg-svg" viewBox="0 0 480 300" role="img" aria-labelledby="dg-after-title" aria-describedby="dg-legend" focusable="false">
+          <title id="dg-after-title">Schematic of the same desktop after the scripts: translucent top bar, a window with red, amber and green controls on the left and all four corners rounded, and a translucent dock along the bottom</title>
+          <rect class="dg-desktop" x="0" y="0" width="480" height="300"/>
+          <!-- top bar: translucent, statically blurred -->
+          <rect class="dg-bar glass" x="0" y="0" width="480" height="22"/>
+          <rect class="dg-pill on" x="12" y="8" width="16" height="6" rx="3"/>
+          <rect class="dg-pill" x="32" y="8" width="8" height="6" rx="3"/>
+          <text class="dg-clock" x="240" y="15" text-anchor="middle">Tue 14:02</text>
+          <rect class="dg-tray" x="404" y="7" width="10" height="8" rx="1"/>
+          <rect class="dg-tray" x="420" y="7" width="10" height="8" rx="1"/>
+          <rect class="dg-tray" x="436" y="7" width="12" height="8" rx="1"/>
+          <!-- window: all four corners rounded -->
+          <rect class="dg-win" x="60" y="48" width="360" height="200" rx="10"/>
+          <path class="dg-head band" d="M60 58 a10 10 0 0 1 10 -10 h340 a10 10 0 0 1 10 10 v24 h-360 z"/>
+          <line class="dg-hair" x1="60" y1="82" x2="420" y2="82"/>
+          <text class="dg-title semi" x="240" y="69" text-anchor="middle">Files</text>
+          <circle class="dg-tl close" cx="78" cy="65" r="6"/>
+          <circle class="dg-tl min" cx="96" cy="65" r="6"/>
+          <circle class="dg-tl max" cx="114" cy="65" r="6"/>
+          <!-- sidebar and content -->
+          <path class="dg-side" d="M60 82 h104 v166 h-94 a10 10 0 0 1 -10 -10 z"/>
+          <rect class="dg-row sel" x="68" y="92" width="88" height="12" rx="3"/>
+          <rect class="dg-row" x="68" y="110" width="76" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="124" width="82" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="138" width="60" height="6" rx="3"/>
+          <rect class="dg-row" x="68" y="152" width="72" height="6" rx="3"/>
+          <g class="dg-files">
+            <rect x="184" y="100" width="34" height="26" rx="3"/><rect x="236" y="100" width="34" height="26" rx="3"/><rect x="288" y="100" width="34" height="26" rx="3"/><rect x="340" y="100" width="34" height="26" rx="3"/>
+            <rect x="184" y="152" width="34" height="26" rx="3"/><rect x="236" y="152" width="34" height="26" rx="3"/><rect x="288" y="152" width="34" height="26" rx="3"/>
+          </g>
+          <!-- dock -->
+          <rect class="dg-dock" x="140" y="258" width="200" height="34" rx="8"/>
+          <g class="dg-icons">
+            <rect x="152" y="263" width="24" height="24" rx="6"/><rect x="190" y="263" width="24" height="24" rx="6"/><rect x="228" y="263" width="24" height="24" rx="6"/><rect x="266" y="263" width="24" height="24" rx="6"/><rect x="304" y="263" width="24" height="24" rx="6"/>
+          </g>
+          <circle class="dg-run" cx="164" cy="290.5" r="1.5"/>
+          <circle class="dg-run" cx="240" cy="290.5" r="1.5"/>
+          <!-- callouts -->
+          <g class="dg-mark"><circle cx="66" cy="46" r="9"/><text x="66" y="49.5" text-anchor="middle">1</text></g>
+          <g class="dg-mark"><circle cx="150" cy="46" r="9"/><text x="150" y="49.5" text-anchor="middle">2</text></g>
+          <g class="dg-mark"><circle cx="420" cy="250" r="9"/><text x="420" y="253.5" text-anchor="middle">3</text></g>
+          <g class="dg-mark"><circle cx="276" cy="65" r="9"/><text x="276" y="68.5" text-anchor="middle">4</text></g>
+          <g class="dg-mark"><circle cx="464" cy="11" r="9"/><text x="464" y="14.5" text-anchor="middle">5</text></g>
+          <g class="dg-mark"><circle cx="354" cy="275" r="9"/><text x="354" y="278.5" text-anchor="middle">6</text></g>
+        </svg>
       </figure>
     </div>
 
+    <ol class="dg-legend" id="dg-legend">
+      <li>
+        <h3>Window controls</h3>
+        <p>Stock <code>button-layout</code> is <code>appmenu:close</code>: one close button, on the right. Script 03 sets <code>close,minimize,maximize:</code>, and WhiteSur draws the three as red, amber and green.</p>
+      </li>
+      <li>
+        <h3>Header bar and widgets</h3>
+        <p><code>gtk-theme</code> becomes <code>WhiteSur-Dark</code>; the shell theme of the same name is applied through the <code>user-themes</code> extension. Note that GTK4/libadwaita applications follow this only where the theme provides a libadwaita stylesheet.</p>
+      </li>
+      <li>
+        <h3>Corner radius</h3>
+        <p>libadwaita rounds its own windows; GTK3, Electron and Qt windows keep square bottom corners. The <code>rounded-window-corners</code> extension rounds all of them, so every window on screen matches.</p>
+      </li>
+      <li>
+        <h3>Fonts</h3>
+        <p><code>font-name</code> becomes <code>Inter 11</code> and <code>titlebar-font</code> becomes <code>Inter Semi-Bold 11</code>, replacing Adwaita Sans. Hinting slight, RGBA antialiasing.</p>
+      </li>
+      <li>
+        <h3>Top bar</h3>
+        <p><code>blur-my-shell</code> with <code>panel/static-blur</code> on: translucent, blurred once against the wallpaper rather than every frame, which is what a UHD&nbsp;620 can afford.</p>
+      </li>
+      <li>
+        <h3>Dock</h3>
+        <p>Stock GNOME shows the dash only inside the Activities overview. <code>dash-to-dock</code> pins it to the bottom: 48&nbsp;px icons, dot running-indicators, dynamic transparency, auto-hide with intellihide.</p>
+      </li>
+    </ol>
+
     <div class="note">
-      <strong>How these were made.</strong> Both halves of each pair are the same
-      application, launched twice on the same machine at the same size — once with
-      Fedora&rsquo;s stock <code>Adwaita:dark</code> and once with WhiteSur — and captured
-      window-by-window. Nothing is mocked up or borrowed. GTK3 applications are used
-      because GTK4/libadwaita apps ignore <code>GTK_THEME</code> entirely, so they
-      cannot show a stock-versus-themed comparison at all.
+      <strong>Why diagrams and not screenshots.</strong> GNOME Shell on Wayland only permits
+      screen capture through the interactive portal, and GTK4/libadwaita applications ignore
+      <code>GTK_THEME</code>, so an honest stock-versus-themed pair of the same window cannot
+      be produced by a script. These are drawn to the settings the scripts write, in the
+      page's own palette, and claim nothing more than that.
     </div>
   </div>
 </section>
 
 <section id="scripts" aria-labelledby="h-scripts">
   <div class="wrap">
-    <p class="sec-label">03 — What runs</p>
+    <p class="sec-label">03 — Scripts</p>
     <h2 id="h-scripts">Ten scripts, each one reversible</h2>
     <p class="lede">Numbered, ordered, independently runnable. Every one is safe to run twice.</p>
-    <div class="grid">
-      <article class="card reveal"><h3><span class="n">00</span> Preflight</h3><p>Backs up your entire dconf, then prints a hardware and thermal baseline. Run it first so you can always get back.</p></article>
-      <article class="card reveal"><h3><span class="n">01</span> Performance</h3><p>The one that matters. Removes forced-performance tuning, restores power-profiles-daemon, sets a sane governor and energy policy.</p></article>
-      <article class="card reveal"><h3><span class="n">02</span> Packages</h3><p>dnf speed config, RPM Fusion, full ffmpeg, hardware video decode, backup tooling.</p></article>
-      <article class="card reveal"><h3><span class="n">03</span> Theme</h3><p>WhiteSur GTK, shell, icons and cursors. Inter and JetBrains Mono. Wallpaper and macOS system sounds.</p></article>
-      <article class="card reveal"><h3><span class="n">04</span> Extensions</h3><p>Twelve GNOME extensions from extensions.gnome.org, tuned for a weak integrated GPU.</p></article>
-      <article class="card reveal"><h3><span class="n">05</span> Shortcuts</h3><p>macOS-style keybindings using nothing but GNOME settings. No daemon required.</p></article>
-      <article class="card opt reveal"><h3><span class="n">06</span> keyd</h3><p>Optional. Super becomes Cmd in every application — without breaking <kbd>Ctrl</kbd>+<kbd>C</kbd> in your terminal.</p></article>
-      <article class="card reveal"><h3><span class="n">07</span> Voice</h3><p>Replaces robotic espeak-ng with Piper neural TTS, entirely inside your home directory.</p></article>
-      <article class="card reveal"><h3><span class="n">08</span> Snapshots</h3><p>btrfs safety net via snapper, wired into dnf so every transaction is undoable.</p></article>
-      <article class="card reveal"><h3><span class="n">09</span> Verify</h3><p>Read-only end-to-end check. Tells you what actually took, and what silently didn’t.</p></article>
-    </div>
+    <ol class="scriptlist">
+      <li><span class="n">00</span><div><h3>Preflight</h3><p>Backs up your entire dconf, then prints a hardware and thermal baseline. Run it first so you can always get back.</p></div></li>
+      <li><span class="n">01</span><div><h3>Performance</h3><p>The one that matters. Removes forced-performance tuning, restores power-profiles-daemon, sets a sane governor and energy policy.</p></div></li>
+      <li><span class="n">02</span><div><h3>Packages</h3><p>dnf speed config, RPM Fusion, full ffmpeg, hardware video decode, backup tooling.</p></div></li>
+      <li><span class="n">03</span><div><h3>Theme</h3><p>WhiteSur GTK, shell, icons and cursors. Inter and JetBrains Mono. Wallpaper and macOS system sounds.</p></div></li>
+      <li><span class="n">04</span><div><h3>Extensions</h3><p>Twelve GNOME extensions from extensions.gnome.org, tuned for a weak integrated GPU.</p></div></li>
+      <li><span class="n">05</span><div><h3>Shortcuts</h3><p>macOS-style keybindings using nothing but GNOME settings. No daemon required.</p></div></li>
+      <li><span class="n opt">06</span><div><h3>keyd <span class="tag-opt">optional</span></h3><p>Super becomes Cmd in every application, without breaking <kbd>Ctrl</kbd>+<kbd>C</kbd> in your terminal.</p></div></li>
+      <li><span class="n">07</span><div><h3>Voice</h3><p>Replaces formant-synthesis espeak-ng with Piper neural TTS, entirely inside your home directory.</p></div></li>
+      <li><span class="n">08</span><div><h3>Snapshots</h3><p>btrfs safety net via snapper, wired into dnf so every transaction is undoable.</p></div></li>
+      <li><span class="n">09</span><div><h3>Verify</h3><p>Read-only end-to-end check. Reports what actually took effect, and what silently did not.</p></div></li>
+    </ol>
   </div>
 </section>
 
 <section id="details" aria-labelledby="h-details">
   <div class="wrap">
-    <p class="sec-label">04 — The nitty gritty</p>
+    <p class="sec-label">04 — Settings</p>
     <h2 id="h-details">Every setting that changes</h2>
-    <p class="lede">Measured values from the reference machine, not aspirations.</p>
+    <p class="lede">Values read back from the reference machine after running, not intended values.</p>
 
-    <table class="detail" style="margin-bottom:22px">
-      <caption>CPU &amp; power</caption>
+    <table class="detail">
+      <caption>CPU and power</caption>
       <thead><tr><th scope="col">Setting</th><th scope="col">Stock / broken</th><th scope="col">After</th></tr></thead>
       <tbody>
         <tr><td>scaling_governor</td><td class="was">performance</td><td class="now">powersave</td></tr>
@@ -250,15 +387,15 @@ cd fedora-mac/scripts && bash install.sh</code>
       </tbody>
     </table>
 
-    <table class="detail" style="margin-bottom:22px">
-      <caption>Desktop &amp; appearance</caption>
+    <table class="detail">
+      <caption>Desktop and appearance</caption>
       <thead><tr><th scope="col">Setting</th><th scope="col">Stock</th><th scope="col">After</th></tr></thead>
       <tbody>
         <tr><td>GTK theme</td><td class="was">Adwaita</td><td class="now">WhiteSur-Dark</td></tr>
         <tr><td>Shell theme</td><td class="was">none (stock top bar)</td><td class="now">WhiteSur-Dark</td></tr>
         <tr><td>Interface font</td><td class="was">Adwaita Sans / Cantarell</td><td class="now">Inter</td></tr>
         <tr><td>Monospace font</td><td class="was">Adwaita Mono</td><td class="now">JetBrains Mono Nerd Font</td></tr>
-        <tr><td>Window controls</td><td class="was">right</td><td class="now">left, macOS order</td></tr>
+        <tr><td>Window controls</td><td class="was">close only, right</td><td class="now">close, minimize, maximize, left</td></tr>
         <tr><td>Display scaling</td><td class="was">1.25× fractional</td><td class="now">100% + 1.15 text scale</td></tr>
         <tr><td>System sounds</td><td class="was">freedesktop</td><td class="now">macOS Big Sur, 44 events</td></tr>
         <tr><td>Panel blur</td><td class="was">live, sigma 15</td><td class="now">static, sigma 10</td></tr>
@@ -266,7 +403,7 @@ cd fedora-mac/scripts && bash install.sh</code>
     </table>
 
     <table class="detail">
-      <caption>System &amp; safety</caption>
+      <caption>System and safety</caption>
       <thead><tr><th scope="col">Setting</th><th scope="col">Stock</th><th scope="col">After</th></tr></thead>
       <tbody>
         <tr><td>Text-to-speech engine</td><td class="was">espeak-ng (formant)</td><td class="now">Piper neural</td></tr>
@@ -281,26 +418,26 @@ cd fedora-mac/scripts && bash install.sh</code>
 
 <section id="clipboard" aria-labelledby="h-clip">
   <div class="wrap">
-    <p class="sec-label">05 — The clever bit</p>
-    <h2 id="h-clip">Cmd+C that doesn’t break your terminal</h2>
+    <p class="sec-label">05 — Clipboard</p>
+    <h2 id="h-clip">Cmd+C that does not break your terminal</h2>
     <p class="lede">
       Remappers normally turn <kbd>Super</kbd>+<kbd>C</kbd> into <kbd>Ctrl</kbd>+<kbd>C</kbd>,
       which in a terminal is SIGINT. You end up choosing between copy and interrupt.
       The way out is to never send <kbd>Ctrl</kbd>+<kbd>C</kbd> at all.
     </p>
-    <div class="grid">
-      <article class="card reveal"><h3>keyd emits a media key</h3><p><code>XF86Copy</code>, <code>XF86Paste</code>, <code>XF86Cut</code> — not Ctrl combinations.</p></article>
-      <article class="card reveal"><h3>Apps handle it natively</h3><p>GTK and Qt already understand those keys as clipboard actions. Nothing to configure.</p></article>
-      <article class="card reveal"><h3>Ctrl+C is untouched</h3><p>It is never transmitted, so interrupt keeps working exactly as before.</p></article>
-    </div>
+    <ol class="rows">
+      <li><h3>keyd emits a media key</h3><p><code>XF86Copy</code>, <code>XF86Paste</code>, <code>XF86Cut</code>, not Ctrl combinations.</p></li>
+      <li><h3>Applications handle it natively</h3><p>GTK and Qt already treat those keys as clipboard actions. Nothing to configure.</p></li>
+      <li><h3>Ctrl+C is untouched</h3><p>It is never transmitted, so interrupt keeps working exactly as before.</p></li>
+    </ol>
   </div>
 </section>
 
 <section id="keys" aria-labelledby="h-keys">
   <div class="wrap">
-    <p class="sec-label">06 — Muscle memory</p>
+    <p class="sec-label">06 — Shortcuts</p>
     <h2 id="h-keys">Shortcuts</h2>
-    <p class="lede">These need no daemon — plain GNOME settings, set by script 05.</p>
+    <p class="lede">Plain GNOME settings, written by script 05. No daemon is involved unless marked.</p>
     <table class="keys">
       <caption class="visually-hidden">macOS-style keyboard shortcuts and what they do</caption>
       <tbody>
@@ -309,9 +446,9 @@ cd fedora-mac/scripts && bash install.sh</code>
         <tr><td><kbd>Super</kbd> <kbd>Space</kbd></td><td>Spotlight</td></tr>
         <tr><td><kbd>Ctrl</kbd> <kbd>←</kbd> / <kbd>→</kbd></td><td>Switch Spaces</td></tr>
         <tr><td><kbd>Ctrl</kbd> <kbd>Super</kbd> <kbd>arrows</kbd></td><td>Tile and maximize</td></tr>
-        <tr><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>V</kbd></td><td>Clipboard history — 50 items, searchable</td></tr>
-        <tr><td><kbd>Super</kbd> <kbd>C</kbd> / <kbd>V</kbd> / <kbd>X</kbd></td><td>Copy, paste, cut — everywhere <em>(with keyd)</em></td></tr>
-        <tr><td><kbd>Backspace</kbd> <kbd>Esc</kbd> <kbd>Enter</kbd></td><td>Panic key — kills keyd instantly</td></tr>
+        <tr><td><kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>V</kbd></td><td>Clipboard history, 50 items, searchable</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>C</kbd> / <kbd>V</kbd> / <kbd>X</kbd></td><td>Copy, paste, cut, everywhere <em>(requires keyd, script 06)</em></td></tr>
+        <tr><td><kbd>Backspace</kbd> <kbd>Esc</kbd> <kbd>Enter</kbd></td><td>Panic key: stops keyd immediately</td></tr>
       </tbody>
     </table>
   </div>
@@ -319,17 +456,17 @@ cd fedora-mac/scripts && bash install.sh</code>
 
 <section id="gotchas" aria-labelledby="h-got">
   <div class="wrap">
-    <p class="sec-label">07 — Hard-won</p>
+    <p class="sec-label">07 — Notes</p>
     <h2 id="h-got">Things that cost real debugging time</h2>
-    <p class="lede">All written up properly, with the diagnosis that actually worked.</p>
-    <div class="grid">
-      <article class="card reveal"><h3>“Enabled” is not “running”</h3><p>A GNOME extension can sit in the enabled list reporting <code>OUT OF DATE</code> and silently never load. Check <code>State</code>, not the list.</p></article>
-      <article class="card reveal"><h3>keyd layers inherit</h3><p>Omitting a key from a compound layer doesn’t pass it through — it falls back to the parent layer and fires the wrong thing.</p></article>
-      <article class="card reveal"><h3>Never grep for “error”</h3><p><code>keyd check</code> reports success as <em>“No errors found.”</em> A naive grep marks a valid config broken.</p></article>
-      <article class="card reveal"><h3>The wrong <code>piper</code></h3><p>The <code>piper</code> package in Fedora’s repos is a gaming-mouse tool. Piper TTS isn’t packaged for Fedora at all.</p></article>
-      <article class="card reveal"><h3><code>pkill -f</code> kills you</h3><p><code>pkill -f speech-dispatcher</code> matches the calling shell’s own command line and ends your session.</p></article>
-      <article class="card reveal"><h3>Fractional scaling costs</h3><p>It renders large and downscales every frame. 100% plus text scaling looks identical and is free.</p></article>
-    </div>
+    <p class="lede">Each is written up in the repository with the diagnosis that actually worked.</p>
+    <ul class="rows">
+      <li><h3>“Enabled” is not “running”</h3><p>A GNOME extension can sit in the enabled list reporting <code>OUT OF DATE</code> and silently never load. Check <code>State</code>, not the list.</p></li>
+      <li><h3>keyd layers inherit</h3><p>Omitting a key from a compound layer does not pass it through; it falls back to the parent layer and fires the wrong thing.</p></li>
+      <li><h3>Never grep for “error”</h3><p><code>keyd check</code> reports success as <em>“No errors found.”</em> A naive grep marks a valid config broken.</p></li>
+      <li><h3>The wrong <code>piper</code></h3><p>The <code>piper</code> package in Fedora’s repositories is a gaming-mouse tool. Piper TTS is not packaged for Fedora at all.</p></li>
+      <li><h3><code>pkill -f</code> kills you</h3><p><code>pkill -f speech-dispatcher</code> matches the calling shell’s own command line and ends your session.</p></li>
+      <li><h3>Fractional scaling costs</h3><p>It renders large and downscales every frame. 100% plus text scaling looks identical and is free.</p></li>
+    </ul>
     <div class="note">
       <strong>Read before you run any of this.</strong> It installs a kernel-level key
       remapper that sees every keystroke, and can replace a system file the login screen
@@ -346,10 +483,10 @@ cd fedora-mac/scripts && bash install.sh</code>
     <div class="related">
       <div class="rt">
         <h3>furnizsh</h3>
-        <p>The terminal half of the same setup — Ghostty, zsh and Starship, installed and themed together. Assumed here, but not required.</p>
+        <p>The terminal half of the same setup: Ghostty, zsh and Starship, installed and themed together. Assumed here, but not required.</p>
       </div>
       <a class="btn ghost" href="https://github.com/Wosmos/furnizsh">View furnizsh</a>
-      <a class="btn" href="https://github.com/Wosmos/fedora-mac">Get started</a>
+      <a class="btn" href="https://github.com/Wosmos/fedora-mac">Source on GitHub</a>
     </div>
   </div>
 </section>
@@ -392,52 +529,8 @@ cd fedora-mac/scripts && bash install.sh</code>
     } catch (e) { copy.textContent = 'select it'; }
     setTimeout(function () { copy.textContent = 'copy'; copy.classList.remove('done'); }, 1700);
   });
-
-  /* before / after sliders — pointer, touch and keyboard all go through the range input */
-  document.querySelectorAll('[data-compare]').forEach(function (box) {
-    var range = box.querySelector('input[type=range]');
-    var imgs = box.querySelectorAll('img');
-    var missing = 0, checked = 0;
-
-    function set(v) { box.style.setProperty('--pos', v + '%'); }
-    range.addEventListener('input', function () { set(this.value); });
-    set(range.value);
-
-    /* if a screenshot has not been captured yet, show an honest placeholder
-       instead of a broken image icon */
-    function audit() {
-      if (++checked < imgs.length) return;
-      if (!missing) return;
-      box.classList.add('pending');
-      box.innerHTML = '<p>screenshot pending — run <code>bash tools/capture-shots.sh</code></p>';
-    }
-    imgs.forEach(function (im) {
-      if (im.complete) { if (!im.naturalWidth) missing++; audit(); }
-      else {
-        im.addEventListener('load', audit);
-        im.addEventListener('error', function () { missing++; audit(); });
-      }
-    });
-  });
-
-  /* reveal on scroll; bars grow once visible */
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        en.target.classList.add('in');
-        en.target.querySelectorAll('.bar-fill').forEach(function (b) { b.classList.add('in'); });
-        io.unobserve(en.target);
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
-  } else {
-    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
-    document.querySelectorAll('.bar-fill').forEach(function (b) { b.classList.add('in'); });
-  }
 })();
 </script>
-
 <!-- ============================================================
      Analytics — GoatCounter.
      Privacy-first: no cookies, no cross-site tracking, no consent
