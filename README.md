@@ -260,9 +260,30 @@ furnizsh specifically.
 
 ## Analytics
 
-The site uses [GoatCounter](https://www.goatcounter.com) — no cookies, no
-cross-site tracking, and no consent banner required. It is **off by default**:
-nothing loads until a site code is set in `site/index.html`.
+Two separate things, because they measure different audiences.
+
+**Repo traffic** is built into GitHub — views, clones, referrers and popular
+paths, no script required. Its catch is a **14-day window**, after which the data
+is gone. `.github/workflows/traffic.yml` snapshots it weekly into
+`docs/traffic/` so the history survives.
+
+```bash
+gh api repos/Wosmos/fedora-mac/traffic/views
+gh api repos/Wosmos/fedora-mac/traffic/popular/referrers
+```
+
+**Site traffic** GitHub does not provide at all — Pages is static hosting with no
+log access, and the Pages API exposes no visitor statistics of any kind. A
+client-side script is the only option, so the site uses
+[GoatCounter](https://www.goatcounter.com): no cookies, no cross-site tracking,
+no consent banner. It is **off by default** — nothing loads until a site code is
+set in `site/index.html`, and it skips itself on localhost.
+
+Its one real limitation is that any client-side counter misses visitors with
+JavaScript off or an ad blocker active — typically 5–15%. The only way to catch
+those is server-side logging, which needs a custom domain proxied through
+Cloudflare, or moving off GitHub Pages entirely. Not worth it for a project
+like this.
 
 GitHub Pages was kept rather than moving to Vercel or Cloudflare, since hosting
 lives next to the repo and a static page gains nothing from a second deploy

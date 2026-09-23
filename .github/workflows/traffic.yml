@@ -1,0 +1,40 @@
+name: Archive traffic
+# GitHub keeps repo traffic for 14 days and then discards it. This snapshots
+# it weekly into docs/traffic/ so the history survives.
+on:
+  schedule: [{cron: '17 4 * * 1'}]   # Mondays 04:17 UTC
+  workflow_dispatch:
+
+permissions: {contents: write}
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and merge traffic data
+        env: {GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"}
+        run: |
+          set -euo pipefail
+          mkdir -p docs/traffic
+          for kind in views clones; do
+            gh api "repos/${GITHUB_REPOSITORY}/traffic/${kind}" > "/tmp/${kind}.json"
+            f="docs/traffic/${kind}.json"
+            [ -f "$f" ] || echo '[]' > "$f"
+            # merge on timestamp so re-runs do not duplicate days
+            jq -s --arg k "$kind" '
+              (.[0] + (.[1][$k] // []))
+              | group_by(.timestamp) | map(max_by(.count))
+              | sort_by(.timestamp)
+            ' "$f" "/tmp/${kind}.json" > "/tmp/merged.json"
+            mv "/tmp/merged.json" "$f"
+            echo "$kind: $(jq 'length' "$f") days on record"
+          done
+      - name: Commit if anything changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/traffic
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "chore: archive repo traffic $(date -u +%F)"
+          git push
